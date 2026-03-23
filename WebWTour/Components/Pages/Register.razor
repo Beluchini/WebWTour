@@ -1,0 +1,156 @@
+@page "/register"
+@using WebWTour.Database
+@using WebWTour.Models
+@using Microsoft.EntityFrameworkCore
+@inject TourContext ef
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<PageTitle>Регистрация | World Tour</PageTitle>
+
+<div class="auth-container">
+    <!-- Фоновое изображение -->
+    <img class="background-image" src="image 12.png" alt="Background" />
+    <div class="overlay"></div>
+
+    <!-- Шапка -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo" @onclick="GoToHome" style="cursor: pointer;">
+                <span class="logo-word">World</span>
+                <span class="logo-word">Tour</span>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="/tours" class="nav-link">Туры</a>
+                <a href="/countries" class="nav-link">Страны</a>
+                <a href="https://www.aviasales.ru/" class="nav-link">Авиабилеты</a>
+                <a href="/about" class="nav-link">О нас</a>
+            </nav>
+
+            <div class="auth-buttons">
+                <a href="/register" class="btn-register active">Зарегистрироваться</a>
+                <a href="/login" class="btn-login">Войти</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Форма регистрации -->
+    <div class="auth-content">
+        <div class="auth-card glass-card">
+            <h1 class="auth-title">Создать аккаунт</h1>
+            <p class="auth-subtitle">Присоединяйтесь к World Tour и открывайте мир путешествий</p>
+
+            <EditForm Model="_newUser" OnValidSubmit="HandleRegister" FormName="registerForm">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="validation-summary" />
+
+                <div class="form-group">
+                    <label class="form-label">Имя</label>
+                    <input type="text" class="form-control" @bind="_newUser.Name" placeholder="Введите ваше имя" />
+                    <ValidationMessage For="@(() => _newUser.Name)" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Фамилия</label>
+                    <input type="text" class="form-control" @bind="_newUser.Surname" placeholder="Введите вашу фамилию" />
+                    <ValidationMessage For="@(() => _newUser.Surname)" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" @bind="_newUser.Email" placeholder="example@mail.com" />
+                    <ValidationMessage For="@(() => _newUser.Email)" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Пароль</label>
+                    <input type="password" class="form-control" @bind="_newUser.Password" placeholder="Минимум 6 символов" />
+                    <ValidationMessage For="@(() => _newUser.Password)" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Подтвердите пароль</label>
+                    <input type="password" class="form-control" @bind="_newUser.ConfirmPassword" placeholder="Повторите пароль" />
+                    <ValidationMessage For="@(() => _newUser.ConfirmPassword)" />
+                </div>
+
+                @if (!string.IsNullOrEmpty(_errorMessage))
+                {
+                    <div class="error-message">@_errorMessage</div>
+                }
+
+                @if (!string.IsNullOrEmpty(_successMessage))
+                {
+                    <div class="success-message">@_successMessage</div>
+                }
+
+                <button type="submit" class="btn-submit" disabled="@_isLoading">
+                    @if (_isLoading)
+                    {
+                        <span class="spinner"></span>
+                    }
+                    <span>Зарегистрироваться</span>
+                </button>
+            </EditForm>
+
+            <div class="auth-footer">
+                <p>Уже есть аккаунт? <a href="/login">Войдите</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private User _newUser = new User();
+    private string _errorMessage = "";
+    private string _successMessage = "";
+    private bool _isLoading = false;
+
+    private async Task HandleRegister()
+    {
+        _errorMessage = "";
+        _successMessage = "";
+        
+        // Проверка на существующего пользователя
+        var existingUser = await ef.Users.FirstOrDefaultAsync(u => u.Email == _newUser.Email);
+        if (existingUser != null)
+        {
+            _errorMessage = "Пользователь с таким email уже существует";
+            return;
+        }
+
+        _isLoading = true;
+        
+        try
+        {
+            // Устанавливаем дату регистрации
+            _newUser.RegistrationDate = DateTime.Now;
+            _newUser.IsActive = true;
+            
+            // Сохраняем пользователя
+            ef.Users.Add(_newUser);
+            await ef.SaveChangesAsync();
+            
+            _successMessage = "Регистрация прошла успешно! Перенаправляем на страницу входа...";
+            
+            // Перенаправление через 2 секунды
+            await Task.Delay(2000);
+            Navigation.NavigateTo("/login", true);
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = "Произошла ошибка при регистрации. Попробуйте позже.";
+            Console.WriteLine($"Registration error: {ex.Message}");
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private void GoToHome()
+    {
+        Navigation.NavigateTo("/", true);
+    }
+}

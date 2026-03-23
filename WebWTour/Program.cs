@@ -9,6 +9,10 @@ builder.Services.AddDbContext<TourContext>();
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+builder.Services.AddServerSideBlazor();
+builder.Services.AddDbContext<TourContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<AuthService>(); // Добавляем сервис авторизации
 
 var app = builder.Build();
 

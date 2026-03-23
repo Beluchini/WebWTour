@@ -81,13 +81,13 @@
 </div>
 
 @code {
-    private Tour _tour = new Tour();
+    private Models.Tour _tour = new Models.Tour();
 
     private void Submit(EditContext arg)
     {
         ef.Add(_tour);
         ef.SaveChanges();
-        _tour = new Tour();
+        _tour = new Models.Tour();
         
         // Optional: Show success message (you can add a toast/notification here)
         // For now, just reset the form
@@ -96,7 +96,7 @@
 
     private void ResetForm()
     {
-        _tour = new Tour();
+        _tour = new Models.Tour();
         StateHasChanged();
     }
 }

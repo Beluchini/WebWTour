@@ -1,0 +1,172 @@
+@page "/tour/{id:int}"
+@using Microsoft.EntityFrameworkCore
+@using WebWTour.Database
+@using WebWTour.Models
+@inject TourContext ef
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<PageTitle>@(Tour?.Tittle ?? "Тур") | World Tour</PageTitle>
+
+@if (Tour == null)
+{
+    <div class="loading-container">
+        <div class="loading-spinner"></div>
+        <p>Загрузка информации о туре...</p>
+    </div>
+}
+else
+{
+    <div class="tour-page-container">
+        <!-- Фоновое изображение -->
+        <img class="background-image" src="image 12.png" alt="Background" />
+        <div class="overlay"></div>
+
+        <!-- Шапка -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo" @onclick="GoToHome" style="cursor: pointer;">
+                    <span class="logo-word">World</span>
+                    <span class="logo-word">Tour</span>
+                </div>
+                
+                <nav class="nav-menu">
+                    <a href="/tours" class="nav-link">Туры</a>
+                    <a href="/countries" class="nav-link">Страны</a>
+                    <a href="https://www.aviasales.ru/" class="nav-link">Авиабилеты</a>
+                    <a href="/about" class="nav-link">О нас</a>
+                </nav>
+                
+                <div class="auth-buttons">
+                    <a href="/register" class="btn-register">Зарегистрироваться</a>
+                    <a href="/login" class="btn-login">Войти</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Контент страницы тура -->
+        <main class="tour-content">
+            <div class="tour-container">
+                <!-- Кнопка назад -->
+                <button class="back-button" @onclick="GoToHome">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    На главную
+                </button>
+
+                <div class="tour-card glass-card-tour">
+                    <div class="tour-grid">
+                        <!-- Левая колонка - изображение -->
+                        <div class="tour-image-section">
+                            <img src="@Tour.ImageLink" alt="@Tour.Tittle" class="tour-image" />
+                            <div class="tour-badge">@Tour.BookType</div>
+                        </div>
+
+                        <!-- Правая колонка - информация -->
+                        <div class="tour-info-section">
+                            <h1 class="tour-title">@Tour.Tittle</h1>
+                            
+                            <div class="tour-place">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                    <circle cx="12" cy="10" r="3"/>
+                                </svg>
+                                @Tour.Place
+                            </div>
+
+                            <div class="tour-short-description">
+                                <h3>Краткое описание</h3>
+                                <p>@Tour.Description</p>
+                            </div>
+
+                            <div class="tour-details-grid">
+                                <div class="detail-item">
+                                    <span class="detail-label">🌤️ Сезон</span>
+                                    <span class="detail-value">@Tour.Season</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">💰 Цена</span>
+                                    <span class="detail-value price">@Tour.Price.ToString("N0") ₽</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">📅 Дата начала</span>
+                                    <span class="detail-value">@Tour.OpenDate.ToString("dd.MM.yyyy")</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">📅 Дата окончания</span>
+                                    <span class="detail-value">@Tour.CloseDate.ToString("dd.MM.yyyy")</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">🏷️ Тип тура</span>
+                                    <span class="detail-value">@Tour.BookType</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">⭐ Рейтинг</span>
+                                    <span class="detail-value">★★★★★</span>
+                                </div>
+                            </div>
+
+                            <div class="tour-full-description">
+                                <h3>Полное описание</h3>
+                                <p>@Tour.FullDecription</p>
+                            </div>
+
+                            <div class="tour-actions">
+                                <button class="btn-cart" @onclick="AddToCart">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="9" cy="21" r="1"/>
+                                        <circle cx="20" cy="21" r="1"/>
+                                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                                    </svg>
+                                    Добавить в корзину
+                                </button>
+                                <button class="btn-book" @onclick="BookNow">
+                                    Забронировать сейчас
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+}
+
+<style>
+
+</style>
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private Models.Tour? Tour { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoadTour();
+    }
+
+    private void GoToHome()
+    {
+        Navigation.NavigateTo("/", true);
+    }
+    
+    private void LoadTour()
+    {
+        Tour = ef.Tours.FirstOrDefault(t => t.Id == Id);
+    }
+
+    private void AddToCart()
+    {
+        // TODO: Реализовать добавление в корзину
+        Console.WriteLine($"Тур {Tour?.Tittle} добавлен в корзину");
+        // Можно добавить уведомление для пользователя
+    }
+
+    private void BookNow()
+    {
+        // TODO: Реализовать бронирование
+        Console.WriteLine($"Бронирование тура {Tour?.Tittle}");
+        // Можно добавить уведомление для пользователя
+    }
+}

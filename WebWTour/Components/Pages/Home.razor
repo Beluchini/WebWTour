@@ -1,67 +1,71 @@
 ﻿@page "/"
 @using Microsoft.EntityFrameworkCore
+@using WebWTour.Database
+@inject TourContext ef
 @using WebWTour.Models
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
 
 <PageTitle>World Tour | Путешествия мечты</PageTitle>
 
 <div class="home-container">
     <!-- Фоновое изображение -->
     <img class="background-image" src="image 12.png" alt="Background" />
-    
+
     <!-- Полупрозрачный оверлей для улучшения читаемости -->
     <div class="overlay"></div>
-    
+
     <!-- Шапка -->
     <header class="header">
         <div class="header-content">
-            <div class="logo">
+            <div class="logo" @onclick="GoToHome" style="cursor: pointer;">
                 <span class="logo-word">World</span>
                 <span class="logo-word">Tour</span>
             </div>
-            
+
             <nav class="nav-menu">
                 <a href="/tours" class="nav-link">Туры</a>
                 <a href="/countries" class="nav-link">Страны</a>
                 <a href="https://www.aviasales.ru/" class="nav-link">Авиабилеты</a>
                 <a href="/about" class="nav-link">О нас</a>
             </nav>
-            
+
             <div class="auth-buttons">
                 <a href="/register" class="btn-register">Зарегистрироваться</a>
                 <a href="/login" class="btn-login">Войти</a>
             </div>
         </div>
     </header>
-    
-    <!-- Центральный блок с фильтром -->
-    <main class="main-content">
+
+    <!-- Центральный блок с фильтром - по центру экрана -->
+    <div class="main-content">
         <div class="search-section">
             <div class="search-card glass-card">
                 <div class="search-form">
                     <div class="search-field">
                         <label class="field-label">Куда</label>
-                        <input type="text" 
-                               class="field-input" 
-                               placeholder="Страна, город, курорт" 
+                        <input type="text"
+                               class="field-input"
+                               placeholder="Страна, город, курорт"
                                value=""
                                @oninput="(e) => { }" />
                     </div>
-                    
+
                     <div class="search-field">
                         <label class="field-label">Когда</label>
-                        <input type="text" 
-                               class="field-input" 
-                               placeholder="Дата или месяц" 
+                        <input type="text"
+                               class="field-input"
+                               placeholder="Дата или месяц"
                                value=""
                                @oninput="(e) => { }" />
                     </div>
-                    
+
                     <div class="search-field">
                         <label class="field-label">Кто едет</label>
                         <div class="guests-input">
-                            <input type="text" 
-                                   class="field-input" 
-                                   placeholder="2 взрослых" 
+                            <input type="text"
+                                   class="field-input"
+                                   placeholder="2 взрослых"
                                    value="2 взрослых"
                                    readonly />
                             <button class="guests-button" type="button">
@@ -71,7 +75,7 @@
                             </button>
                         </div>
                     </div>
-                    
+
                     <button class="search-button">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="11" cy="11" r="8"/>
@@ -82,15 +86,101 @@
                 </div>
             </div>
         </div>
-    </main>
+    </div>
+
+    <!-- Каталог туров - сразу под фильтром, выглядывает из-за экрана -->
+    <div class="catalog-section">
+        <div class="catalog-container">
+            <div class="catalog-header">
+                <h2 class="catalog-title">Популярные направления</h2>
+                <p class="catalog-subtitle">Выберите страну для незабываемого путешествия</p>
+            </div>
+
+            <div class="countries-grid">
+                @foreach (var item in _displayedTours)
+                {
+                <div class="country-card glass-card-tour">
+                    <div class="card-image">
+                        <img src="@item.ImageLink" alt="@item.Tittle" />
+                        <div class="card-badge">@item.BookType</div>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">@item.Tittle</h3>
+                        <p class="card-place">📍 @item.Place</p>
+                        <p class="card-description">@item.Description</p>
+                        <div class="card-info">
+                            <span class="card-season">🌤️ @item.Season</span>
+                            <span class="card-price">💰 @item.Price.ToString("N0") ₽</span>
+                        </div>
+                        <div class="card-dates">
+                            <span>📅 @item.OpenDate.ToString("dd.MM.yyyy") - @item.CloseDate.ToString("dd.MM.yyyy")</span>
+                        </div>
+                        <button class="card-button" @onclick="() => GoToTour(item.Id)">Подробнее →</button>
+                    </div>
+                </div>
+                }
+            </div>
+
+            @if (_displayedTours.Count < _allTours.Count)
+            {
+            <div class="show-more-container">
+                <button class="show-more-button" @onclick="LoadMoreTours">
+                    Показать ещё
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 9l6 6 6-6"/>
+                    </svg>
+                </button>
+            </div>
+            }
+        </div>
+    </div>
 </div>
 
-<div>
-    @foreach(var tour in )
-    <img src=""/>
-</div>
+@code {
+    private List<Models.Tour> _allTours = new();
+    private List<Models.Tour> _displayedTours = new();
+    private int _currentDisplayCount = 20;
+    private const int ToursPerPage = 20;
+    private Random _random = new Random();
 
-@code
-{
-    
+    protected override void OnInitialized()
+    {
+        LoadTours();
+    }
+
+    private void LoadTours()
+    {
+        _allTours = ef.Tours.OrderBy(t => t.Id).ToList();
+        ShuffleTours();
+        _displayedTours = _allTours.Take(_currentDisplayCount).ToList();
+    }
+
+    private void ShuffleTours()
+    {
+        // Перемешиваем список туров случайным образом
+        for (int i = _allTours.Count - 1; i > 0; i--)
+        {
+            int j = _random.Next(i + 1);
+            var temp = _allTours[i];
+            _allTours[i] = _allTours[j];
+            _allTours[j] = temp;
+        }
+    }
+
+    private void LoadMoreTours()
+    {
+        _currentDisplayCount += ToursPerPage;
+        _displayedTours = _allTours.Take(_currentDisplayCount).ToList();
+        StateHasChanged();
+    }
+
+    private void GoToTour(int id)
+    {
+        Navigation.NavigateTo($"/tour/{id}");
+    }
+
+    private void GoToHome()
+    {
+        Navigation.NavigateTo("/", true);
+    }
 }
