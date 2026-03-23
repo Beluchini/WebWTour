@@ -1,0 +1,526 @@
+@page "/tours"
+@using Microsoft.EntityFrameworkCore
+@implements IDisposable
+@using WebWTour.Database
+@inject TourContext ef
+@using WebWTour.Models
+@inject AuthService AuthService
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+
+<PageTitle>Каталог туров | World Tour</PageTitle>
+
+<div class="catalog-page-container">
+    <!-- Фоновое изображение -->
+    <img class="background-image" src="image 12.png" alt="Background" />
+    <div class="overlay"></div>
+
+    <!-- Шапка -->
+    <Header />
+
+    <!-- Основной контент -->
+    <div class="catalog-page-content">
+        <div class="catalog-page-wrapper">
+            <!-- Боковая панель с фильтрами -->
+            <aside class="filters-sidebar glass-card">
+                <h3 class="filters-title">Фильтры</h3>
+                
+                <button class="reset-filters-btn" @onclick="ResetAllFilters">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 6h18M9 12h6M5 18h14"/>
+                    </svg>
+                    Сбросить все
+                </button>
+
+                <!-- Фильтр по стране -->
+                <div class="filter-group">
+                    <label class="filter-label">📍 Страна</label>
+                    <div class="autocomplete-container">
+                        <input type="text"
+                               class="filter-input"
+                               placeholder="Поиск страны..."
+                               @bind="_searchPlace"
+                               @oninput="OnPlaceInput" />
+                        @if (_suggestions.Count > 0 && !string.IsNullOrEmpty(_searchPlace))
+                        {
+                            <div class="autocomplete-dropdown">
+                                @foreach (var suggestion in _suggestions.Take(5))
+                                {
+                                    <div class="autocomplete-item" @onclick="() => SelectPlace(suggestion)">
+                                        @suggestion
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Фильтр по дате -->
+                <div class="filter-group">
+                    <label class="filter-label">📅 Дата тура</label>
+                    <div class="date-range">
+                        <input type="text"
+                               class="filter-input"
+                               placeholder="От"
+                               @bind="_dateFrom"
+                               @onclick=@(() => ShowDatePicker("from"))
+                               readonly />
+                        <span class="date-separator">—</span>
+                        <input type="text"
+                               class="filter-input"
+                               placeholder="До"
+                               @bind="_dateTo"
+                               @onclick=@(() => ShowDatePicker("to"))
+                               readonly />
+                    </div>
+                    @if (_showDatePicker)
+                    {
+                        <div class="date-picker-dropdown">
+                            <div class="date-picker-header">
+                                <button class="date-nav" @onclick="PreviousMonth">◀</button>
+                                <span class="date-month">@_currentMonth.ToString("MMMM yyyy")</span>
+                                <button class="date-nav" @onclick="NextMonth">▶</button>
+                            </div>
+                            <div class="date-picker-calendar">
+                                @for (int i = 0; i < 7; i++)
+                                {
+                                    <div class="date-weekday">@_weekdays[i]</div>
+                                }
+                                @for (int i = 0; i < _firstDayOffset; i++)
+                                {
+                                    <div class="date-empty"></div>
+                                }
+                                @for (int day = 1; day <= DateTime.DaysInMonth(_currentMonth.Year, _currentMonth.Month); day++)
+                                {
+                                    var currentDate = new DateTime(_currentMonth.Year, _currentMonth.Month, day);
+                                    <div class="date-day @(IsDateSelected(currentDate) ? "selected" : "")"
+                                         @onclick="() => SelectDate(currentDate)">
+                                        @day
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Фильтр по типу тура -->
+                <div class="filter-group">
+                    <label class="filter-label">🏷️ Тип тура</label>
+                    <div class="checkbox-group">
+                        @foreach (var type in _tourTypes)
+                        {
+                            <label class="checkbox-label">
+                                <input type="checkbox" 
+                                       value="@type" 
+                                       @onchange="(e) => ToggleTourType(type, (bool)e.Value)" />
+                                <span>@type</span>
+                            </label>
+                        }
+                    </div>
+                </div>
+
+                <!-- Фильтр по цене -->
+                <div class="filter-group">
+                    <label class="filter-label">💰 Цена (₽)</label>
+                    <div class="price-range">
+                        <input type="number"
+                               class="filter-input"
+                               placeholder="от"
+                               @bind="_priceMin"
+                               @oninput="OnPriceChange" />
+                        <span class="price-separator">-</span>
+                        <input type="number"
+                               class="filter-input"
+                               placeholder="до"
+                               @bind="_priceMax"
+                               @oninput="OnPriceChange" />
+                    </div>
+                    <div class="price-slider">
+                        <input type="range" 
+                               min="0" 
+                               max="@_maxPrice" 
+                               @bind="_priceMin"
+                               @oninput="OnPriceChange" />
+                        <input type="range" 
+                               min="0" 
+                               max="@_maxPrice" 
+                               @bind="_priceMax"
+                               @oninput="OnPriceChange" />
+                    </div>
+                </div>
+
+                <!-- Фильтр по сезону -->
+                <div class="filter-group">
+                    <label class="filter-label">🌤️ Сезон</label>
+                    <select class="filter-select" @bind="_selectedSeason">
+                        <option value="">Все сезоны</option>
+                        <option value="Лето">Лето</option>
+                        <option value="Зима">Зима</option>
+                        <option value="Весна">Весна</option>
+                        <option value="Осень">Осень</option>
+                    </select>
+                </div>
+
+                <!-- Количество человек -->
+                <div class="filter-group">
+                    <label class="filter-label">👥 Количество человек</label>
+                    <div class="guests-picker">
+                        <div class="guests-item">
+                            <span>Взрослые</span>
+                            <div class="guests-counter">
+                                <button class="counter-btn" @onclick="() => UpdateAdults(-1)">-</button>
+                                <span>@_adults</span>
+                                <button class="counter-btn" @onclick="() => UpdateAdults(1)">+</button>
+                            </div>
+                        </div>
+                        <div class="guests-item">
+                            <span>Дети</span>
+                            <div class="guests-counter">
+                                <button class="counter-btn" @onclick="() => UpdateChildren(-1)">-</button>
+                                <span>@_children</span>
+                                <button class="counter-btn" @onclick="() => UpdateChildren(1)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="apply-filters-btn" @onclick="ApplyFilters">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="M21 21l-4.35-4.35"/>
+                    </svg>
+                    Применить фильтры
+                </button>
+            </aside>
+
+            <!-- Список туров -->
+            <div class="tours-content">
+                <div class="tours-header">
+                    <h1 class="tours-title">Все туры</h1>
+                    <div class="tours-count">Найдено: @_filteredTours.Count туров</div>
+                    <div class="sort-selector">
+                        <label>Сортировать по:</label>
+                        <select value="@_sortBy" @onchange="OnSortChange">
+                            <option value="price_asc">Цена: по возрастанию</option>
+                            <option value="price_desc">Цена: по убыванию</option>
+                            <option value="name_asc">Название: А-Я</option>
+                            <option value="name_desc">Название: Я-А</option>
+                            <option value="date_asc">Дата: сначала ближайшие</option>
+                        </select>
+                    </div>
+                </div>
+
+                @if (_filteredTours.Count == 0)
+                {
+                    <div class="no-results">
+                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="M21 21l-4.35-4.35"/>
+                        </svg>
+                        <p>По вашему запросу ничего не найдено</p>
+                        <button class="btn-browse" @onclick="ResetAllFilters">Сбросить фильтры</button>
+                    </div>
+                }
+                else
+                {
+                    <div class="tours-grid">
+                        @foreach (var item in _displayedTours)
+                        {
+                            <div class="tour-card glass-card-tour">
+                                <div class="card-image">
+                                    <img src="@item.ImageLink" alt="@item.Tittle" />
+                                    <div class="card-badge">@item.BookType</div>
+                                </div>
+                                <div class="card-content">
+                                    <h3 class="card-title">@item.Tittle</h3>
+                                    <p class="card-place">📍 @item.Place</p>
+                                    <p class="card-description">@item.Description</p>
+                                    <div class="card-info">
+                                        <span class="card-season">🌤️ @item.Season</span>
+                                        <span class="card-price">@item.Price.ToString("N0") ₽</span>
+                                    </div>
+                                    <div class="card-dates">
+                                        <span>📅 @item.OpenDate.ToString("dd.MM.yyyy") - @item.CloseDate.ToString("dd.MM.yyyy")</span>
+                                    </div>
+                                    <button class="card-button" @onclick="() => GoToTour(item.Id)">Подробнее →</button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+
+                @if (_filteredTours.Count > 0 && _displayedTours.Count < _filteredTours.Count)
+                {
+                    <div class="show-more-container">
+                        <button class="show-more-button" @onclick="LoadMoreTours">
+                            Показать ещё
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 9l6 6 6-6"/>
+                            </svg>
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Models.Tour> _allTours = new();
+    private List<Models.Tour> _filteredTours = new();
+    private List<Models.Tour> _displayedTours = new();
+    private int _currentDisplayCount = 20;
+    private const int ToursPerPage = 20;
+    
+    // Фильтры
+    private string _searchPlace = "";
+    private string _dateFrom = "";
+    private string _dateTo = "";
+    private DateTime? _selectedDateFrom;
+    private DateTime? _selectedDateTo;
+    private List<string> _selectedTourTypes = new();
+    private int _priceMin = 0;
+    private int _priceMax = 1000000;
+    private int _maxPrice = 1000000;
+    private string _selectedSeason = "";
+    private int _adults = 2;
+    private int _children = 0;
+    private string _sortBy = "price_asc";
+    
+    // Данные для фильтров
+    private List<string> _allPlaces = new();
+    private List<string> _tourTypes = new();
+    
+    // Автодополнение
+    private List<string> _suggestions = new();
+    
+    // Датапикер
+    private bool _showDatePicker = false;
+    private string _activeDatePicker = "";
+    private DateTime _currentMonth = DateTime.Today;
+    private string[] _weekdays = { "Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс" };
+    private int _firstDayOffset;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthService.InitializeAsync();
+        LoadTours();
+        AuthService.OnAuthStateChanged += StateHasChanged;
+        AuthService.OnCartChanged += StateHasChanged;
+    }
+
+    private void LoadTours()
+    {
+        _allTours = ef.Tours.OrderBy(t => t.Id).ToList();
+        _allPlaces = _allTours.Select(t => t.Place).Distinct().ToList();
+        _tourTypes = _allTours.Select(t => t.BookType).Distinct().ToList();
+        _maxPrice = _allTours.Max(t => t.Price);
+        _priceMax = _maxPrice;
+        ApplyFilters();
+    }
+    
+    private void OnSortChange(ChangeEventArgs e)
+    {
+        _sortBy = e.Value?.ToString() ?? "price_asc";
+        ApplyFilters();
+    }
+    
+    private void OnPlaceInput(ChangeEventArgs e)
+    {
+        _searchPlace = e.Value?.ToString() ?? "";
+        if (!string.IsNullOrEmpty(_searchPlace))
+        {
+            _suggestions = _allPlaces
+                .Where(p => p.Contains(_searchPlace, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+        else
+        {
+            _suggestions.Clear();
+        }
+        StateHasChanged();
+    }
+
+    private void SelectPlace(string place)
+    {
+        _searchPlace = place;
+        _suggestions.Clear();
+        StateHasChanged();
+    }
+
+    private void ShowDatePicker(string type)
+    {
+        _activeDatePicker = type;
+        _showDatePicker = !_showDatePicker;
+        StateHasChanged();
+    }
+
+    private void PreviousMonth()
+    {
+        _currentMonth = _currentMonth.AddMonths(-1);
+        UpdateMonthOffset();
+        StateHasChanged();
+    }
+
+    private void NextMonth()
+    {
+        _currentMonth = _currentMonth.AddMonths(1);
+        UpdateMonthOffset();
+        StateHasChanged();
+    }
+
+    private void UpdateMonthOffset()
+    {
+        var firstDay = new DateTime(_currentMonth.Year, _currentMonth.Month, 1);
+        int firstDayOfWeek = (int)firstDay.DayOfWeek;
+        _firstDayOffset = firstDayOfWeek == 0 ? 6 : firstDayOfWeek - 1;
+    }
+
+    private bool IsDateSelected(DateTime date)
+    {
+        if (_activeDatePicker == "from" && _selectedDateFrom.HasValue)
+            return _selectedDateFrom.Value.Date == date.Date;
+        if (_activeDatePicker == "to" && _selectedDateTo.HasValue)
+            return _selectedDateTo.Value.Date == date.Date;
+        return false;
+    }
+
+    private void SelectDate(DateTime date)
+    {
+        if (_activeDatePicker == "from")
+        {
+            _selectedDateFrom = date;
+            _dateFrom = date.ToString("dd.MM.yyyy");
+        }
+        else if (_activeDatePicker == "to")
+        {
+            _selectedDateTo = date;
+            _dateTo = date.ToString("dd.MM.yyyy");
+        }
+        _showDatePicker = false;
+        StateHasChanged();
+    }
+
+    private void ToggleTourType(string type, bool isChecked)
+    {
+        if (isChecked)
+        {
+            if (!_selectedTourTypes.Contains(type))
+                _selectedTourTypes.Add(type);
+        }
+        else
+        {
+            _selectedTourTypes.Remove(type);
+        }
+        StateHasChanged();
+    }
+
+    private void OnPriceChange()
+    {
+        if (_priceMin > _priceMax)
+            _priceMin = _priceMax;
+        if (_priceMax < _priceMin)
+            _priceMax = _priceMin;
+        StateHasChanged();
+    }
+
+    private void UpdateAdults(int delta)
+    {
+        _adults = Math.Max(1, Math.Min(10, _adults + delta));
+        StateHasChanged();
+    }
+
+    private void UpdateChildren(int delta)
+    {
+        _children = Math.Max(0, Math.Min(10, _children + delta));
+        StateHasChanged();
+    }
+
+    private void ApplyFilters()
+    {
+        var query = _allTours.AsQueryable();
+        
+        // Фильтр по стране
+        if (!string.IsNullOrEmpty(_searchPlace))
+        {
+            query = query.Where(t => t.Place.Contains(_searchPlace, StringComparison.OrdinalIgnoreCase));
+        }
+        
+        // Фильтр по дате
+        if (_selectedDateFrom.HasValue)
+        {
+            query = query.Where(t => t.CloseDate >= _selectedDateFrom.Value);
+        }
+        if (_selectedDateTo.HasValue)
+        {
+            query = query.Where(t => t.OpenDate <= _selectedDateTo.Value);
+        }
+        
+        // Фильтр по типу тура
+        if (_selectedTourTypes.Any())
+        {
+            query = query.Where(t => _selectedTourTypes.Contains(t.BookType));
+        }
+        
+        // Фильтр по цене
+        query = query.Where(t => t.Price >= _priceMin && t.Price <= _priceMax);
+        
+        // Фильтр по сезону
+        if (!string.IsNullOrEmpty(_selectedSeason))
+        {
+            query = query.Where(t => t.Season == _selectedSeason);
+        }
+        
+        _filteredTours = query.ToList();
+        
+        // Сортировка
+        _filteredTours = _sortBy switch
+        {
+            "price_asc" => _filteredTours.OrderBy(t => t.Price).ToList(),
+            "price_desc" => _filteredTours.OrderByDescending(t => t.Price).ToList(),
+            "name_asc" => _filteredTours.OrderBy(t => t.Tittle).ToList(),
+            "name_desc" => _filteredTours.OrderByDescending(t => t.Tittle).ToList(),
+            "date_asc" => _filteredTours.OrderBy(t => t.OpenDate).ToList(),
+            _ => _filteredTours
+        };
+        
+        _currentDisplayCount = ToursPerPage;
+        _displayedTours = _filteredTours.Take(_currentDisplayCount).ToList();
+        StateHasChanged();
+    }
+
+    private void ResetAllFilters()
+    {
+        _searchPlace = "";
+        _selectedDateFrom = null;
+        _selectedDateTo = null;
+        _dateFrom = "";
+        _dateTo = "";
+        _selectedTourTypes.Clear();
+        _priceMin = 0;
+        _priceMax = _maxPrice;
+        _selectedSeason = "";
+        _adults = 2;
+        _children = 0;
+        _suggestions.Clear();
+        ApplyFilters();
+    }
+
+    private void LoadMoreTours()
+    {
+        _currentDisplayCount += ToursPerPage;
+        _displayedTours = _filteredTours.Take(_currentDisplayCount).ToList();
+        StateHasChanged();
+    }
+
+    private void GoToTour(int id)
+    {
+        Navigation.NavigateTo($"/tour/{id}");
+    }
+
+    public void Dispose()
+    {
+        AuthService.OnAuthStateChanged -= StateHasChanged;
+        AuthService.OnCartChanged -= StateHasChanged;
+    }
+}

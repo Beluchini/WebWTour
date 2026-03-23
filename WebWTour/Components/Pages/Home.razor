@@ -18,36 +18,7 @@
     <div class="overlay"></div>
 
     <!-- Шапка -->
-    <header class="header">
-        <div class="header-content">
-            <div class="logo" @onclick="GoToHome" style="cursor: pointer;">
-                <span class="logo-word">World</span>
-                <span class="logo-word">Tour</span>
-            </div>
-
-            <nav class="nav-menu">
-                <a href="/tours" class="nav-link">Туры</a>
-                <a href="/countries" class="nav-link">Страны</a>
-                <a href="https://www.aviasales.ru/" class="nav-link">Авиабилеты</a>
-                <a href="/about" class="nav-link">О нас</a>
-            </nav>
-
-            <div class="auth-buttons">
-                @if (AuthService.IsAuthenticated)
-                {
-                <div class="user-info">
-                    <span class="user-name">👤 @AuthService.CurrentUser?.Name</span>
-                    <button class="btn-logout" @onclick="Logout">Выйти</button>
-                </div>
-                }
-                else
-                {
-                <a href="/register" class="btn-register">Зарегистрироваться</a>
-                <a href="/login" class="btn-login">Войти</a>
-                }
-            </div>
-        </div>
-    </header>
+    <Header />
 
     <!-- Центральный блок с фильтром - по центру экрана -->
     <div class="main-content">
@@ -56,20 +27,64 @@
                 <div class="search-form">
                     <div class="search-field">
                         <label class="field-label">Куда</label>
-                        <input type="text"
-                               class="field-input"
-                               placeholder="Страна, город, курорт"
-                               value=""
-                               @oninput="(e) => { }" />
+                        <div class="autocomplete-container">
+                            <input type="text"
+                                   class="field-input"
+                                   placeholder="Страна, город, курорт"
+                                   @bind="_searchPlace"
+                                   @oninput="OnPlaceInput" />
+                            @if (_suggestions.Count > 0 && !string.IsNullOrEmpty(_searchPlace))
+                            {
+                            <div class="autocomplete-dropdown">
+                                @foreach (var suggestion in _suggestions.Take(5))
+                                {
+                                <div class="autocomplete-item" @onclick="() => SelectPlace(suggestion)">
+                                    @suggestion
+                                </div>
+                                }
+                            </div>
+                            }
+                        </div>
                     </div>
 
                     <div class="search-field">
                         <label class="field-label">Когда</label>
                         <input type="text"
                                class="field-input"
-                               placeholder="Дата или месяц"
-                               value=""
-                               @oninput="(e) => { }" />
+                               placeholder="Выберите дату"
+                               @bind="_searchDate"
+                               @onclick="ShowDatePicker"
+                               readonly />
+                        @if (_showDatePicker)
+                        {
+                        <div class="date-picker-dropdown">
+                            <div class="date-picker-header">
+                                <button class="date-nav" @onclick="PreviousMonth">◀</button>
+                                <span class="date-month">@_currentMonth.ToString("MMMM yyyy")</span>
+                                <button class="date-nav" @onclick="NextMonth">▶</button>
+                            </div>
+                            <div class="date-picker-calendar">
+                                @for (int i = 0; i < 7; i++)
+                                {
+                                <div class="date-weekday">@_weekdays[i]</div>
+                                }
+                                @for (int i = 0; i < _firstDayOffset; i++)
+                                {
+                                <div class="date-empty"></div>
+                                }
+                                @for (int day = 1; day <= DateTime.DaysInMonth(_currentMonth.Year, _currentMonth.Month); day++)
+                                {
+                                var currentDate = new DateTime(_currentMonth.Year, _currentMonth.Month, day);
+                                var isSelected = _selectedDate.HasValue && _selectedDate.Value.Date == currentDate.Date;
+                                var isToday = DateTime.Today.Date == currentDate.Date;
+                                <div class="date-day @(isSelected ? "selected" : "") @(isToday ? "today" : "")"
+                                     @onclick="() => SelectDate(currentDate)">
+                                    @day
+                                </div>
+                                }
+                            </div>
+                        </div>
+                        }
                     </div>
 
                     <div class="search-field">
@@ -78,17 +93,35 @@
                             <input type="text"
                                    class="field-input"
                                    placeholder="2 взрослых"
-                                   value="2 взрослых"
-                                   readonly />
-                            <button class="guests-button" type="button">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M6 9l6 6 6-6"/>
-                                </svg>
-                            </button>
+                                   value="@_guestsText"
+                                   readonly
+                                   @onclick="ShowGuestsPicker" />
+                            @if (_showGuestsPicker)
+                            {
+                            <div class="guests-picker-dropdown">
+                                <div class="guests-picker-item">
+                                    <span>Взрослые</span>
+                                    <div class="guests-counter">
+                                        <button class="counter-btn" @onclick="() => UpdateAdults(-1)">-</button>
+                                        <span>@_adults</span>
+                                        <button class="counter-btn" @onclick="() => UpdateAdults(1)">+</button>
+                                    </div>
+                                </div>
+                                <div class="guests-picker-item">
+                                    <span>Дети</span>
+                                    <div class="guests-counter">
+                                        <button class="counter-btn" @onclick="() => UpdateChildren(-1)">-</button>
+                                        <span>@_children</span>
+                                        <button class="counter-btn" @onclick="() => UpdateChildren(1)">+</button>
+                                    </div>
+                                </div>
+                                <button class="guests-apply" @onclick="ApplyGuests">Применить</button>
+                            </div>
+                            }
                         </div>
                     </div>
 
-                    <button class="search-button">
+                    <button class="search-button" @onclick="SearchTours">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="11" cy="11" r="8"/>
                             <path d="M21 21l-4.35-4.35"/>
@@ -100,16 +133,33 @@
         </div>
     </div>
 
-    <!-- Каталог туров - сразу под фильтром, выглядывает из-за экрана -->
+    <!-- Каталог туров -->
     <div class="catalog-section">
         <div class="catalog-container">
             <div class="catalog-header">
                 <h2 class="catalog-title">Популярные направления</h2>
                 <p class="catalog-subtitle">Выберите страну для незабываемого путешествия</p>
+                @if (_isFiltered)
+                {
+                <button class="reset-filters" @onclick="ResetFilters">Сбросить фильтры</button>
+                }
             </div>
 
             <div class="countries-grid">
-                @foreach (var item in _displayedTours)
+                @if (_filteredTours.Count == 0)
+                {
+                <div class="no-results">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="M21 21l-4.35-4.35"/>
+                    </svg>
+                    <p>По вашему запросу ничего не найдено</p>
+                    <button class="btn-browse" @onclick="ResetFilters">Посмотреть все туры</button>
+                </div>
+                }
+                else
+                {
+                @foreach (var item in _filteredTours)
                 {
                 <div class="country-card glass-card-tour">
                     <div class="card-image">
@@ -122,7 +172,7 @@
                         <p class="card-description">@item.Description</p>
                         <div class="card-info">
                             <span class="card-season">🌤️ @item.Season</span>
-                            <span class="card-price">💰 @item.Price.ToString("N0") ₽</span>
+                            <span class="card-price">@item.Price.ToString("N0") ₽</span>
                         </div>
                         <div class="card-dates">
                             <span>📅 @item.OpenDate.ToString("dd.MM.yyyy") - @item.CloseDate.ToString("dd.MM.yyyy")</span>
@@ -131,9 +181,10 @@
                     </div>
                 </div>
                 }
+                }
             </div>
 
-            @if (_displayedTours.Count < _allTours.Count)
+            @if (!_isFiltered && _filteredTours.Count < _allTours.Count && _filteredTours.Count > 0)
             {
             <div class="show-more-container">
                 <button class="show-more-button" @onclick="LoadMoreTours">
@@ -149,69 +200,227 @@
 </div>
 
 @code {
-    private List<Models.Tour> _allTours = new();
-    private List<Models.Tour> _displayedTours = new();
-    private int _currentDisplayCount = 20;
-    private const int ToursPerPage = 20;
-    private Random _random = new Random();
+private List<Models.Tour> _allTours = new();
+private List<Models.Tour> _filteredTours = new();
+private List<Models.Tour> _displayedTours = new();
+private int _currentDisplayCount = 20;
+private const int ToursPerPage = 20;
+private Random _random = new Random();
 
-    protected override void OnInitialized()
-    {
-        LoadTours();
-        AuthService.OnAuthStateChanged += StateHasChanged;
-    }
+// Фильтры
+private string _searchPlace = "";
+private string _searchDate = "";
+private DateTime? _selectedDate;
+private int _adults = 2;
+private int _children = 0;
+private string _guestsText = "2 взрослых";
+private bool _isFiltered = false;
 
-    private void LoadTours()
-    {
-        _allTours = ef.Tours.OrderBy(t => t.Id).ToList();
-        ShuffleTours();
-        _displayedTours = _allTours.Take(_currentDisplayCount).ToList();
-    }
-    
-    private async Task Logout()
-    {
-        await AuthService.Logout();
-        StateHasChanged();
-    }
-    
-    private void ShuffleTours()
-    {
-        // Перемешиваем список туров случайным образом
-        for (int i = _allTours.Count - 1; i > 0; i--)
-        {
-            int j = _random.Next(i + 1);
-            var temp = _allTours[i];
-            _allTours[i] = _allTours[j];
-            _allTours[j] = temp;
-        }
-    }
+// Автодополнение для стран
+private List<string> _allPlaces = new();
+private List<string> _suggestions = new();
 
-    private void LoadMoreTours()
-    {
-        _currentDisplayCount += ToursPerPage;
-        _displayedTours = _allTours.Take(_currentDisplayCount).ToList();
-        StateHasChanged();
-    }
+// Датапикер
+private bool _showDatePicker = false;
+private DateTime _currentMonth = DateTime.Today;
+private string[] _weekdays = { "Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс" };
+private int _firstDayOffset;
 
-    private void GoToTour(int id)
-    {
-        Navigation.NavigateTo($"/tour/{id}");
-    }
+// Пикер гостей
+private bool _showGuestsPicker = false;
 
-    private void GoToHome()
-    {
-        Navigation.NavigateTo("/", true);
-    }
-    
-    public void Dispose()
-    {
-        AuthService.OnAuthStateChanged -= StateHasChanged;
-    }
-    
-    protected override async Task OnInitializedAsync()
-    {
-        await AuthService.InitializeAsync();
-        LoadTours();
-        AuthService.OnAuthStateChanged += StateHasChanged;
-    }
+protected override async Task OnInitializedAsync()
+{
+await AuthService.InitializeAsync();
+LoadTours();
+AuthService.OnAuthStateChanged += StateHasChanged;
+AuthService.OnCartChanged += StateHasChanged;
+}
+
+private void LoadTours()
+{
+_allTours = ef.Tours.OrderBy(t => t.Id).ToList();
+_allPlaces = _allTours.Select(t => t.Place).Distinct().ToList();
+ShuffleTours();
+_filteredTours = _allTours.ToList();
+_displayedTours = _filteredTours.Take(_currentDisplayCount).ToList();
+UpdateMonthOffset();
+}
+
+private void ShuffleTours()
+{
+for (int i = _allTours.Count - 1; i > 0; i--)
+{
+int j = _random.Next(i + 1);
+var temp = _allTours[i];
+_allTours[i] = _allTours[j];
+_allTours[j] = temp;
+}
+}
+
+private void OnPlaceInput(ChangeEventArgs e)
+{
+_searchPlace = e.Value?.ToString() ?? "";
+if (!string.IsNullOrEmpty(_searchPlace))
+{
+_suggestions = _allPlaces
+.Where(p => p.Contains(_searchPlace, StringComparison.OrdinalIgnoreCase))
+.ToList();
+}
+else
+{
+_suggestions.Clear();
+}
+StateHasChanged();
+}
+
+private void SelectPlace(string place)
+{
+_searchPlace = place;
+_suggestions.Clear();
+StateHasChanged();
+}
+
+private void ShowDatePicker()
+{
+_showDatePicker = !_showDatePicker;
+_showGuestsPicker = false;
+StateHasChanged();
+}
+
+private void PreviousMonth()
+{
+_currentMonth = _currentMonth.AddMonths(-1);
+UpdateMonthOffset();
+StateHasChanged();
+}
+
+private void NextMonth()
+{
+_currentMonth = _currentMonth.AddMonths(1);
+UpdateMonthOffset();
+StateHasChanged();
+}
+
+private void UpdateMonthOffset()
+{
+var firstDay = new DateTime(_currentMonth.Year, _currentMonth.Month, 1);
+int firstDayOfWeek = (int)firstDay.DayOfWeek;
+_firstDayOffset = firstDayOfWeek == 0 ? 6 : firstDayOfWeek - 1;
+}
+
+private void SelectDate(DateTime date)
+{
+_selectedDate = date;
+_searchDate = date.ToString("dd.MM.yyyy");
+_showDatePicker = false;
+StateHasChanged();
+}
+
+private void ShowGuestsPicker()
+{
+_showGuestsPicker = !_showGuestsPicker;
+_showDatePicker = false;
+StateHasChanged();
+}
+
+private void UpdateAdults(int delta)
+{
+_adults = Math.Max(1, Math.Min(10, _adults + delta));
+UpdateGuestsText();
+StateHasChanged();
+}
+
+private void UpdateChildren(int delta)
+{
+_children = Math.Max(0, Math.Min(10, _children + delta));
+UpdateGuestsText();
+StateHasChanged();
+}
+
+private void UpdateGuestsText()
+{
+if (_children == 0)
+{
+_guestsText = $"{_adults} {GetAdultWord(_adults)}";
+}
+else
+{
+_guestsText = $"{_adults} {GetAdultWord(_adults)}, {_children} {GetChildWord(_children)}";
+}
+}
+
+private string GetAdultWord(int count)
+{
+if (count == 1) return "взрослый";
+if (count >= 2 && count <= 4) return "взрослых";
+return "взрослых";
+}
+
+private string GetChildWord(int count)
+{
+if (count == 1) return "ребенок";
+if (count >= 2 && count <= 4) return "ребенка";
+return "детей";
+}
+
+private void ApplyGuests()
+{
+_showGuestsPicker = false;
+StateHasChanged();
+}
+
+private void SearchTours()
+{
+var query = _allTours.AsQueryable();
+
+// Фильтр по месту
+if (!string.IsNullOrEmpty(_searchPlace))
+{
+query = query.Where(t => t.Place.Contains(_searchPlace, StringComparison.OrdinalIgnoreCase));
+}
+
+// Фильтр по дате
+if (_selectedDate.HasValue)
+{
+query = query.Where(t => t.OpenDate <= _selectedDate.Value && t.CloseDate >= _selectedDate.Value);
+}
+
+_filteredTours = query.ToList();
+_isFiltered = !string.IsNullOrEmpty(_searchPlace) || _selectedDate.HasValue;
+_displayedTours = _filteredTours.Take(_currentDisplayCount).ToList();
+StateHasChanged();
+}
+
+private void ResetFilters()
+{
+_searchPlace = "";
+_searchDate = "";
+_selectedDate = null;
+_adults = 2;
+_children = 0;
+_guestsText = "2 взрослых";
+_isFiltered = false;
+_filteredTours = _allTours.ToList();
+_displayedTours = _filteredTours.Take(_currentDisplayCount).ToList();
+StateHasChanged();
+}
+
+private void LoadMoreTours()
+{
+_currentDisplayCount += ToursPerPage;
+_displayedTours = _filteredTours.Take(_currentDisplayCount).ToList();
+StateHasChanged();
+}
+
+private void GoToTour(int id)
+{
+Navigation.NavigateTo($"/tour/{id}");
+}
+
+public void Dispose()
+{
+AuthService.OnAuthStateChanged -= StateHasChanged;
+AuthService.OnCartChanged -= StateHasChanged;
+}
 }

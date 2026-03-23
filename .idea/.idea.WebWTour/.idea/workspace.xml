@@ -12,18 +12,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="59496e84-10d9-4d24-a581-362ae837d74b" name="Changes" comment="Сделал карточки и страницу к каждому туру, также регистрацию">
-      <change afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/Login.razor" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/login.razor.css" afterDir="false" />
+    <list default="true" id="59496e84-10d9-4d24-a581-362ae837d74b" name="Changes" comment="Сделал учетную запись">
+      <change afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/Header.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/Header.razor.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/Profile.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/Profile.razor.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/Tours.razor.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.WebWTour/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.WebWTour/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebWTour.Database/TourContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour.Database/TourContext.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebWTour.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour.sln.DotSettings.user" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebWTour/Components/AuthService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/AuthService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebWTour.Database/Migrations/TourContextModelSnapshot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour.Database/Migrations/TourContextModelSnapshot.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebWTour.Database/tour.db" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour.Database/tour.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebWTour.Models/Order.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour.Models/Order.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebWTour/AuthService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/AuthService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebWTour/Components/Pages/Catalog.razor" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/Tours.razor" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WebWTour/Components/Pages/Home.razor" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/Home.razor" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebWTour/Components/Pages/Home.razor.css" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/Home.razor.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebWTour/Components/Pages/Login.razor" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/Login.razor" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WebWTour/Components/Pages/Register.razor" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/Register.razor" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebWTour/Components/Pages/Register.razor.css" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/Register.razor.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebWTour/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebWTour/appsettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/appsettings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebWTour/Components/Pages/TourPage.razor" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/TourPage.razor" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WebWTour/tour.db" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/tour.db" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -197,7 +202,7 @@
       <workItem from="1774191552497" duration="1838000" />
       <workItem from="1774203774737" duration="1457000" />
       <workItem from="1774246849834" duration="13114000" />
-      <workItem from="1774260884662" duration="3427000" />
+      <workItem from="1774260884662" duration="8270000" />
     </task>
     <task id="LOCAL-00001" summary="models and migrations">
       <option name="closed" value="true" />
@@ -223,7 +228,15 @@
       <option name="project" value="LOCAL" />
       <updated>1774260311039</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Сделал учетную запись">
+      <option name="closed" value="true" />
+      <created>1774264539198</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1774264539198</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -236,6 +249,7 @@
     <MESSAGE value="models and migrations" />
     <MESSAGE value="Добавил страницу добавления товаров и также начал оформлять домашнюю" />
     <MESSAGE value="Сделал карточки и страницу к каждому туру, также регистрацию" />
-    <option name="LAST_COMMIT_MESSAGE" value="Сделал карточки и страницу к каждому туру, также регистрацию" />
+    <MESSAGE value="Сделал учетную запись" />
+    <option name="LAST_COMMIT_MESSAGE" value="Сделал учетную запись" />
   </component>
 </project>
