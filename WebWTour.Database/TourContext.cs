@@ -12,7 +12,9 @@ public class TourContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        base.OnConfiguring(optionsBuilder);
-        optionsBuilder.UseSqlite("Data Source=tour.db");
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseSqlite("Data Source=tour.db");
+        }
     }
 }

@@ -12,25 +12,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="59496e84-10d9-4d24-a581-362ae837d74b" name="Changes" comment="Добавил страницу добавления товаров и также начал оформлять домашнюю">
-      <change afterPath="$PROJECT_DIR$/WebWTour/Components/AuthService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/AddTour.razor.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/Home.razor.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/Register.razor" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/Register.razor.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/TourPage.razor" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/TourPage.razor.css" afterDir="false" />
+    <list default="true" id="59496e84-10d9-4d24-a581-362ae837d74b" name="Changes" comment="Сделал карточки и страницу к каждому туру, также регистрацию">
+      <change afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/Login.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/login.razor.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.WebWTour/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.WebWTour/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebWTour.Database/Migrations/TourContextModelSnapshot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour.Database/Migrations/TourContextModelSnapshot.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebWTour.Database/tour.db" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour.Database/tour.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebWTour.Models/User.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour.Models/User.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebWTour/Components/Pages/AddTour.razor" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/AddTour.razor" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebWTour.Database/TourContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour.Database/TourContext.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebWTour.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour.sln.DotSettings.user" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebWTour/Components/AuthService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/AuthService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WebWTour/Components/Pages/Home.razor" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/Home.razor" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebWTour/WebWTour.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/WebWTour.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebWTour/Components/Pages/Register.razor" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/Register.razor" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebWTour/Components/Pages/Register.razor.css" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/Register.razor.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebWTour/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebWTour/appsettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/appsettings.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WebWTour/tour.db" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/tour.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebWTour/tour.db-shm" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/tour.db-shm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebWTour/tour.db-wal" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/tour.db-wal" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebWTour/wwwroot/app.css" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/wwwroot/app.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,7 +57,10 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/4a28847852ee9ba45fd3107526c0a749a733bd4f4ebf33aa3c9a59737a3f758/EntityFrameworkServiceCollectionExtensions.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/621526284d3e4868b98948aff942206525763e57e194a27623b66c384466/ServiceProviderServiceExtensions.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/a0b45f29f34f594814a7b1fbc25fe5ef3c18257956ed4f4fbfa68717db58/DbContext.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/c28655223245c8d433d4d4234c31c4b8a4fd871bd6a0e2268c726eb4db0d/DbContextServices.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/d65d8dd6af5669905bd6d55baa11d05965d2c35dab0553524c64dd0c775311d/EventDefinition`.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/WebWTour.Database/TourContext.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/WebWTour.Models/Review.cs" root0="FORCE_HIGHLIGHTING" />
@@ -81,21 +78,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    ".NET Launch Settings Profile.WebWTour: http.executor": "Debug",
-    ".NET Launch Settings Profile.WebWTour: https.executor": "Debug",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "list.type.of.created.stylesheet": "CSS",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Launch Settings Profile.WebWTour: http.executor&quot;: &quot;Debug&quot;,
+    &quot;.NET Launch Settings Profile.WebWTour: https.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected=".NET Launch Settings Profile.WebWTour: https">
     <configuration name="WebWTour: http" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/WebWTour/WebWTour.csproj" />
@@ -199,7 +196,8 @@
       <workItem from="1774106940730" duration="6212000" />
       <workItem from="1774191552497" duration="1838000" />
       <workItem from="1774203774737" duration="1457000" />
-      <workItem from="1774246849834" duration="12315000" />
+      <workItem from="1774246849834" duration="13114000" />
+      <workItem from="1774260884662" duration="3427000" />
     </task>
     <task id="LOCAL-00001" summary="models and migrations">
       <option name="closed" value="true" />
@@ -217,7 +215,15 @@
       <option name="project" value="LOCAL" />
       <updated>1774252664027</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Сделал карточки и страницу к каждому туру, также регистрацию">
+      <option name="closed" value="true" />
+      <created>1774260311039</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1774260311039</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -229,6 +235,7 @@
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="models and migrations" />
     <MESSAGE value="Добавил страницу добавления товаров и также начал оформлять домашнюю" />
-    <option name="LAST_COMMIT_MESSAGE" value="Добавил страницу добавления товаров и также начал оформлять домашнюю" />
+    <MESSAGE value="Сделал карточки и страницу к каждому туру, также регистрацию" />
+    <option name="LAST_COMMIT_MESSAGE" value="Сделал карточки и страницу к каждому туру, также регистрацию" />
   </component>
 </project>

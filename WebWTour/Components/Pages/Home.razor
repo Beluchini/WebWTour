@@ -1,8 +1,10 @@
 ﻿@page "/"
 @using Microsoft.EntityFrameworkCore
+@implements IDisposable
 @using WebWTour.Database
 @inject TourContext ef
 @using WebWTour.Models
+@inject AuthService AuthService
 @rendermode InteractiveServer
 @inject NavigationManager Navigation
 
@@ -31,8 +33,18 @@
             </nav>
 
             <div class="auth-buttons">
+                @if (AuthService.IsAuthenticated)
+                {
+                <div class="user-info">
+                    <span class="user-name">👤 @AuthService.CurrentUser?.Name</span>
+                    <button class="btn-logout" @onclick="Logout">Выйти</button>
+                </div>
+                }
+                else
+                {
                 <a href="/register" class="btn-register">Зарегистрироваться</a>
                 <a href="/login" class="btn-login">Войти</a>
+                }
             </div>
         </div>
     </header>
@@ -146,6 +158,7 @@
     protected override void OnInitialized()
     {
         LoadTours();
+        AuthService.OnAuthStateChanged += StateHasChanged;
     }
 
     private void LoadTours()
@@ -154,7 +167,13 @@
         ShuffleTours();
         _displayedTours = _allTours.Take(_currentDisplayCount).ToList();
     }
-
+    
+    private async Task Logout()
+    {
+        await AuthService.Logout();
+        StateHasChanged();
+    }
+    
     private void ShuffleTours()
     {
         // Перемешиваем список туров случайным образом
@@ -182,5 +201,17 @@
     private void GoToHome()
     {
         Navigation.NavigateTo("/", true);
+    }
+    
+    public void Dispose()
+    {
+        AuthService.OnAuthStateChanged -= StateHasChanged;
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthService.InitializeAsync();
+        LoadTours();
+        AuthService.OnAuthStateChanged += StateHasChanged;
     }
 }

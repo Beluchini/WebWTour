@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.EntityFrameworkCore;
+using WebWTour;
 using WebWTour.Components;
 using WebWTour.Database;
 
@@ -10,9 +12,8 @@ builder.Services.AddDbContext<TourContext>();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddDbContext<TourContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddScoped<AuthService>(); // Добавляем сервис авторизации
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<ProtectedLocalStorage>();
 
 var app = builder.Build();
 
@@ -33,9 +34,9 @@ app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-using (var ServieScope = app.Services.CreateScope())
+using (var ServiceScope = app.Services.CreateScope())
 {
-    var context = ServieScope.ServiceProvider.GetRequiredService<TourContext>();
+    var context = ServiceScope.ServiceProvider.GetRequiredService<TourContext>();
     
     context.Database.Migrate();
 }

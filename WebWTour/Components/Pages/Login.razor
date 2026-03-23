@@ -1,0 +1,136 @@
+@page "/login"
+@using System.ComponentModel.DataAnnotations
+@using WebWTour.Database
+@using WebWTour.Models
+@using Microsoft.EntityFrameworkCore
+@inject TourContext ef
+@inject NavigationManager Navigation
+@inject AuthService AuthService
+@rendermode InteractiveServer
+
+<PageTitle>Вход | World Tour</PageTitle>
+
+<div class="auth-container">
+    <!-- Фоновое изображение -->
+    <img class="background-image" src="image 12.png" alt="Background" />
+    <div class="overlay"></div>
+
+    <!-- Шапка -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo" @onclick="GoToHome" style="cursor: pointer;">
+                <span class="logo-word">World</span>
+                <span class="logo-word">Tour</span>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="/tours" class="nav-link">Туры</a>
+                <a href="/countries" class="nav-link">Страны</a>
+                <a href="https://www.aviasales.ru/" class="nav-link">Авиабилеты</a>
+                <a href="/about" class="nav-link">О нас</a>
+            </nav>
+
+            <div class="auth-buttons">
+                <a href="/register" class="btn-register">Зарегистрироваться</a>
+                <a href="/login" class="btn-login active">Войти</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Форма входа -->
+    <div class="auth-content">
+        <div class="auth-card glass-card">
+            <h1 class="auth-title">Добро пожаловать</h1>
+            <p class="auth-subtitle">Войдите в свой аккаунт, чтобы продолжить</p>
+
+            <EditForm Model="_loginModel" OnValidSubmit="HandleLogin" FormName="loginForm">
+                <DataAnnotationsValidator />
+
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" @bind="_loginModel.Email" placeholder="example@mail.com" />
+                    <ValidationMessage For="@(() => _loginModel.Email)" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Пароль</label>
+                    <input type="password" class="form-control" @bind="_loginModel.Password" placeholder="Введите пароль" />
+                    <ValidationMessage For="@(() => _loginModel.Password)" />
+                </div>
+
+                @if (!string.IsNullOrEmpty(_errorMessage))
+                {
+                <div class="error-message">@_errorMessage</div>
+                }
+
+                <button type="submit" class="btn-submit" disabled="@_isLoading">
+                    @if (_isLoading)
+                    {
+                    <span class="spinner"></span>
+                    }
+                    <span>Войти</span>
+                </button>
+            </EditForm>
+
+            <div class="auth-footer">
+                <p>Нет аккаунта? <a href="/register">Зарегистрируйтесь</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+private LoginModel _loginModel = new LoginModel();
+private string _errorMessage = "";
+private bool _isLoading = false;
+
+private async Task HandleLogin()
+{
+    _errorMessage = "";
+    _isLoading = true;
+
+    try
+    {
+        var user = await ef.Users
+            .FirstOrDefaultAsync(u => u.Email == _loginModel.Email && u.Password == _loginModel.Password);
+
+        if (user != null)
+        {
+            user.LastLoginDate = DateTime.Now;
+            await ef.SaveChangesAsync();
+            
+            await AuthService.Login(user); // Добавьте await
+            
+            Navigation.NavigateTo("/", true);
+        }
+        else
+        {
+            _errorMessage = "Неверный email или пароль";
+        }
+    }
+    catch (Exception ex)
+    {
+        _errorMessage = "Произошла ошибка при входе. Попробуйте позже.";
+        Console.WriteLine($"Login error: {ex.Message}");
+    }
+    finally
+    {
+        _isLoading = false;
+    }
+}
+
+private void GoToHome()
+{
+Navigation.NavigateTo("/", true);
+}
+
+public class LoginModel
+{
+[Required(ErrorMessage = "Email обязателен")]
+[EmailAddress(ErrorMessage = "Введите корректный email")]
+public string Email { get; set; } = "";
+
+[Required(ErrorMessage = "Пароль обязателен")]
+public string Password { get; set; } = "";
+}
+}
