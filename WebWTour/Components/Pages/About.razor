@@ -1,0 +1,219 @@
+@page "/about"
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<PageTitle>О нас | World Tour</PageTitle>
+
+<div class="about-container">
+    <!-- Фоновое изображение -->
+    <img class="background-image" src="image 12.png" alt="Background" />
+    <div class="overlay"></div>
+
+    <!-- Шапка -->
+    <Header />
+
+    <!-- Контент -->
+    <div class="about-content">
+        <div class="about-wrapper">
+            <!-- Hero секция -->
+            <div class="hero-section glass-card">
+                <h1 class="hero-title">World Tour</h1>
+                <p class="hero-subtitle">Ваш надежный партнер в мире путешествий</p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">10+</span>
+                        <span class="stat-label">лет опыта</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">50+</span>
+                        <span class="stat-label">стран</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">10,000+</span>
+                        <span class="stat-label">счастливых туристов</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">500+</span>
+                        <span class="stat-label">уникальных туров</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Наша история -->
+            <div class="story-section glass-card">
+                <h2 class="section-title">📖 Наша история</h2>
+                <div class="story-content">
+                    <p>
+                        Компания <strong>World Tour</strong> была основана в 2014 году группой энтузиастов, 
+                        объединенных страстью к путешествиям и желанием сделать мир доступнее для каждого. 
+                        Начиная с небольших групповых туров по Европе, мы выросли в одного из лидеров 
+                        туристического рынка.
+                    </p>
+                    <p>
+                        Наша миссия — не просто продавать туры, а создавать незабываемые впечатления, 
+                        которые останутся с вами на всю жизнь. Мы верим, что путешествия меняют людей 
+                        к лучшему, расширяют горизонты и наполняют жизнь яркими красками.
+                    </p>
+                    <p>
+                        За годы работы мы организовали тысячи путешествий для наших клиентов. От романтических 
+                        уикендов в Париже до экстремальных экспедиций в Гималаи — мы знаем, как сделать 
+                        ваш отдых идеальным.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Чем мы занимаемся -->
+            <div class="services-section glass-card">
+                <h2 class="section-title">✨ Что мы предлагаем</h2>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <div class="service-icon">🌍</div>
+                        <h3>Индивидуальные туры</h3>
+                        <p>Разрабатываем маршруты под ваш бюджет, интересы и график. Полная персонализация каждого путешествия.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">👥</div>
+                        <h3>Групповые туры</h3>
+                        <p>Экономные путешествия в компании единомышленников. Отличный способ найти новых друзей.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">✈️</div>
+                        <h3>Авиабилеты</h3>
+                        <p>Помогаем найти лучшие цены на авиабилеты. Экономим ваше время и деньги.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">🏨</div>
+                        <h3>Бронирование отелей</h3>
+                        <p>Подбираем лучшее жилье по соотношению цена/качество. От хостелов до люксовых отелей.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">🚗</div>
+                        <h3>Трансферы и аренда авто</h3>
+                        <p>Организуем встречу в аэропорту, аренду автомобиля или индивидуальные экскурсии.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">🛂</div>
+                        <h3>Визовая поддержка</h3>
+                        <p>Помогаем с оформлением виз и необходимых документов для путешествий.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Почему выбирают нас -->
+            <div class="advantages-section glass-card">
+                <h2 class="section-title">⭐ Почему выбирают World Tour</h2>
+                <div class="advantages-grid">
+                    <div class="advantage-item">
+                        <span class="advantage-icon">💎</span>
+                        <div>
+                            <h3>Индивидуальный подход</h3>
+                            <p>Каждый клиент для нас уникален. Мы учитываем все ваши пожелания и предпочтения.</p>
+                        </div>
+                    </div>
+                    <div class="advantage-item">
+                        <span class="advantage-icon">💰</span>
+                        <div>
+                            <h3>Лучшие цены</h3>
+                            <p>Работаем напрямую с поставщиками, чтобы предложить вам максимально выгодные условия.</p>
+                        </div>
+                    </div>
+                    <div class="advantage-item">
+                        <span class="advantage-icon">🛡️</span>
+                        <div>
+                            <h3>Надежность и безопасность</h3>
+                            <p>Работаем только с проверенными партнерами. Ваша безопасность — наш приоритет.</p>
+                        </div>
+                    </div>
+                    <div class="advantage-item">
+                        <span class="advantage-icon">🎯</span>
+                        <div>
+                            <h3>24/7 поддержка</h3>
+                            <p>Наша команда всегда на связи, чтобы помочь вам в любой ситуации.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Наша команда -->
+            <div class="team-section glass-card">
+                <h2 class="section-title">👥 Наша команда</h2>
+                <div class="team-grid">
+                    <div class="team-member">
+                        <div class="member-avatar">👩‍💼</div>
+                        <h3>Анна Петрова</h3>
+                        <p>Основатель и CEO</p>
+                        <small>15 лет в туризме</small>
+                    </div>
+                    <div class="team-member">
+                        <div class="member-avatar">🧑‍💼</div>
+                        <h3>Михаил Соколов</h3>
+                        <p>Руководитель отдела продаж</p>
+                        <small>10 лет опыта</small>
+                    </div>
+                    <div class="team-member">
+                        <div class="member-avatar">👩‍✈️</div>
+                        <h3>Елена Волкова</h3>
+                        <p>Эксперт по Азии</p>
+                        <small>Путешествовала по 30+ странам</small>
+                    </div>
+                    <div class="team-member">
+                        <div class="member-avatar">🧑‍✈️</div>
+                        <h3>Дмитрий Морозов</h3>
+                        <p>Эксперт по Европе</p>
+                        <small>Жил в 5 странах</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Контакты -->
+            <div class="contacts-section glass-card">
+                <h2 class="section-title">📞 Контакты</h2>
+                <div class="contacts-grid">
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <span class="contact-icon">📍</span>
+                            <div>
+                                <h3>Адрес</h3>
+                                <p>г. Москва, ул. Тверская, д. 15, офис 304</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">📞</span>
+                            <div>
+                                <h3>Телефон</h3>
+                                <p>+7 (495) 123-45-67</p>
+                                <p>+7 (800) 555-35-35 (бесплатно по России)</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">✉️</span>
+                            <div>
+                                <h3>Email</h3>
+                                <p>info@worldtour.ru</p>
+                                <p>booking@worldtour.ru</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">🕐</span>
+                            <div>
+                                <h3>Режим работы</h3>
+                                <p>Пн-Пт: 9:00 - 20:00</p>
+                                <p>Сб-Вс: 10:00 - 18:00</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="contact-social">
+                        <h3>Мы в соцсетях</h3>
+                        <div class="social-links">
+                            <a href="#" class="social-link">📘 Telegram</a>
+                            <a href="#" class="social-link">📸 Instagram</a>
+                            <a href="#" class="social-link">👍 VK</a>
+                            <a href="#" class="social-link">💬 WhatsApp</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

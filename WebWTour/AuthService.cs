@@ -9,15 +9,18 @@ namespace WebWTour
     {
         private User? _currentUser;
         private List<CartItem> _cartItems = new();
+        private List<Order> _bookedOrders = new();
         private readonly ProtectedLocalStorage _localStorage;
         private readonly TourContext _context;
         
         public event Action? OnAuthStateChanged;
         public event Action? OnCartChanged;
+        public event Action? OnBookingsChanged;
         
         public User? CurrentUser => _currentUser;
         public bool IsAuthenticated => _currentUser != null;
         public IReadOnlyList<CartItem> CartItems => _cartItems;
+        public IReadOnlyList<Order> BookedOrders => _bookedOrders;
         public int CartCount => _cartItems.Sum(x => x.Quantity);
         public decimal CartTotal => _cartItems.Sum(x => (x.Tour?.Price ?? 0) * x.Quantity);
         
@@ -36,6 +39,7 @@ namespace WebWTour
                 {
                     _currentUser = userResult.Value;
                     await LoadCartFromDatabase();
+                    await LoadBookingsFromDatabase();
                 }
                 
                 NotifyStateChanged();
@@ -51,7 +55,7 @@ namespace WebWTour
             if (_currentUser == null) return;
             
             var orders = await _context.Orders
-                .Where(o => o.UserId == _currentUser.Id && !o.IsCompleted)
+                .Where(o => o.UserId == _currentUser.Id && o.Status == "cart")
                 .Include(o => o.Tour)
                 .ToListAsync();
                 
@@ -76,43 +80,54 @@ namespace WebWTour
             }).ToList();
         }
         
+        private async Task LoadBookingsFromDatabase()
+        {
+            if (_currentUser == null) return;
+            
+            _bookedOrders = await _context.Orders
+                .Where(o => o.UserId == _currentUser.Id && o.Status == "booked")
+                .OrderByDescending(o => o.BookingDate)
+                .ToListAsync();
+        }
+        
         public async Task Login(User user)
         {
             _currentUser = user;
             await _localStorage.SetAsync("currentUser", user);
             await LoadCartFromDatabase();
+            await LoadBookingsFromDatabase();
             NotifyStateChanged();
             NotifyCartChanged();
+            NotifyBookingsChanged();
         }
         
         public async Task Logout()
         {
             _currentUser = null;
             _cartItems.Clear();
+            _bookedOrders.Clear();
             await _localStorage.DeleteAsync("currentUser");
             NotifyStateChanged();
             NotifyCartChanged();
+            NotifyBookingsChanged();
         }
         
         public async Task AddToCart(Tour tour, int quantity = 1)
         {
             if (_currentUser == null) return;
             
-            // Проверяем, есть ли уже такой тур в корзине
             var existingOrder = await _context.Orders
                 .FirstOrDefaultAsync(o => o.UserId == _currentUser.Id && 
                                           o.TourId == tour.Id && 
-                                          !o.IsCompleted);
+                                          o.Status == "cart");
                                           
             if (existingOrder != null)
             {
-                // Обновляем количество
                 existingOrder.Quantity += quantity;
                 await _context.SaveChangesAsync();
             }
             else
             {
-                // Создаем новый заказ
                 var order = new Order
                 {
                     UserId = _currentUser.Id,
@@ -127,7 +142,7 @@ namespace WebWTour
                     ImageLink = tour.ImageLink,
                     Season = tour.Season,
                     BookType = tour.BookType,
-                    IsCompleted = false
+                    Status = "cart"
                 };
                 
                 _context.Orders.Add(order);
@@ -143,7 +158,7 @@ namespace WebWTour
             if (_currentUser == null) return;
             
             var order = await _context.Orders
-                .FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == _currentUser.Id);
+                .FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == _currentUser.Id && o.Status == "cart");
                 
             if (order != null)
             {
@@ -159,7 +174,7 @@ namespace WebWTour
             if (_currentUser == null) return;
             
             var order = await _context.Orders
-                .FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == _currentUser.Id);
+                .FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == _currentUser.Id && o.Status == "cart");
                 
             if (order != null)
             {
@@ -182,7 +197,7 @@ namespace WebWTour
             if (_currentUser == null) return;
             
             var orders = await _context.Orders
-                .Where(o => o.UserId == _currentUser.Id && !o.IsCompleted)
+                .Where(o => o.UserId == _currentUser.Id && o.Status == "cart")
                 .ToListAsync();
                 
             _context.Orders.RemoveRange(orders);
@@ -192,23 +207,62 @@ namespace WebWTour
             NotifyCartChanged();
         }
         
-        public async Task CompleteOrder()
+        public async Task BookOrder(int orderId)
+        {
+            if (_currentUser == null) return;
+            
+            var order = await _context.Orders
+                .FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == _currentUser.Id && o.Status == "cart");
+                
+            if (order != null)
+            {
+                order.Status = "booked";
+                order.BookingDate = DateTime.Now;
+                await _context.SaveChangesAsync();
+                
+                await LoadCartFromDatabase();
+                await LoadBookingsFromDatabase();
+                NotifyCartChanged();
+                NotifyBookingsChanged();
+            }
+        }
+        
+        public async Task BookAllOrders()
         {
             if (_currentUser == null) return;
             
             var orders = await _context.Orders
-                .Where(o => o.UserId == _currentUser.Id && !o.IsCompleted)
+                .Where(o => o.UserId == _currentUser.Id && o.Status == "cart")
                 .ToListAsync();
                 
             foreach (var order in orders)
             {
-                order.IsCompleted = true;
+                order.Status = "booked";
+                order.BookingDate = DateTime.Now;
             }
             
             await _context.SaveChangesAsync();
             
-            _cartItems.Clear();
+            await LoadCartFromDatabase();
+            await LoadBookingsFromDatabase();
             NotifyCartChanged();
+            NotifyBookingsChanged();
+        }
+        
+        public async Task CancelBooking(int orderId)
+        {
+            if (_currentUser == null) return;
+            
+            var order = await _context.Orders
+                .FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == _currentUser.Id && o.Status == "booked");
+                
+            if (order != null)
+            {
+                order.Status = "cancelled";
+                await _context.SaveChangesAsync();
+                await LoadBookingsFromDatabase();
+                NotifyBookingsChanged();
+            }
         }
         
         private void NotifyStateChanged()
@@ -219,6 +273,11 @@ namespace WebWTour
         private void NotifyCartChanged()
         {
             OnCartChanged?.Invoke();
+        }
+        
+        private void NotifyBookingsChanged()
+        {
+            OnBookingsChanged?.Invoke();
         }
     }
     

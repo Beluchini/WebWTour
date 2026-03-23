@@ -456,3 +456,110 @@
         grid-template-columns: 1fr;
     }
 }
+/* Стили для всех select элементов */
+.filter-select,
+.sort-selector select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 0.75rem 2rem 0.75rem 1rem;
+    color: white;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 16px;
+}
+
+.filter-select:hover,
+.sort-selector select:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.filter-select:focus,
+.sort-selector select:focus {
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 0 2px rgba(255, 217, 61, 0.2);
+}
+
+.filter-select option,
+.sort-selector select option {
+    background: #2c3e50;
+    color: white;
+    padding: 0.75rem;
+}
+
+/* Стили для select в сортировке */
+.sort-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.sort-selector select {
+    min-width: 200px;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Стили для select в фильтрах */
+.filter-select {
+    width: 100%;
+}
+
+/* Адаптивность для select */
+@media (max-width: 768px) {
+    .sort-selector {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .sort-selector select {
+        width: 100%;
+    }
+
+    .filter-select,
+    .sort-selector select {
+        padding: 0.65rem 2rem 0.65rem 1rem;
+        font-size: 0.85rem;
+    }
+}
+/* Кастомный скроллбар для select */
+.filter-select option,
+.sort-selector select option {
+    scrollbar-width: thin;
+    scrollbar-color: #ffd93d rgba(255, 255, 255, 0.2);
+}
+
+.filter-select option::-webkit-scrollbar,
+.sort-selector select option::-webkit-scrollbar {
+    width: 8px;
+}
+
+.filter-select option::-webkit-scrollbar-track,
+.sort-selector select option::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.filter-select option::-webkit-scrollbar-thumb,
+.sort-selector select option::-webkit-scrollbar-thumb {
+    background: #ffd93d;
+    border-radius: 4px;
+}
+
+.filter-select option::-webkit-scrollbar-thumb:hover,
+.sort-selector select option::-webkit-scrollbar-thumb:hover {
+    background: #ffc107;
+}

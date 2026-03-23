@@ -306,7 +306,7 @@
 }
 
 .cart-item-price {
-    color: #ffd93d;
+    color: #f1f1f1;
     font-weight: 700;
 }
 
@@ -383,7 +383,7 @@
 }
 
 .summary-total {
-    color: #ffd93d;
+    color: #ffffff;
     font-size: 1.5rem;
 }
 
@@ -463,5 +463,201 @@
 
     .section-title {
         font-size: 1.25rem;
+    }
+}
+.tabs-section {
+    padding: 1.5rem;
+}
+
+.tabs-header {
+    display: flex;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 1.5rem;
+}
+
+.tab-btn {
+    padding: 0.75rem 1.5rem;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.tab-btn:hover {
+    color: white;
+}
+
+.tab-btn.active {
+    color: #ffd93d;
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #ffd93d;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Стили для бронирований */
+.empty-bookings {
+    text-align: center;
+    padding: 3rem;
+}
+
+.empty-bookings svg {
+    stroke: rgba(255, 255, 255, 0.5);
+    margin-bottom: 1rem;
+}
+
+.empty-bookings p {
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 1.5rem;
+}
+
+.bookings-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.booking-card {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    transition: all 0.3s ease;
+}
+
+.booking-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.booking-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.booking-details {
+    flex: 1;
+}
+
+.booking-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0.25rem;
+}
+
+.booking-place {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 0.5rem;
+}
+
+.booking-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.8rem;
+}
+
+.booking-date {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.booking-price {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.booking-status {
+    color: #a8e6cf;
+}
+
+.booking-booking-date {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.7rem;
+}
+
+.btn-cancel {
+    padding: 0.5rem 1rem;
+    background: rgba(255, 107, 107, 0.2);
+    border: 1px solid rgba(255, 107, 107, 0.3);
+    border-radius: 8px;
+    color: #ff6b6b;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+    background: rgba(255, 107, 107, 0.4);
+    transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+    .booking-card {
+        flex-direction: column;
+    }
+
+    .booking-image {
+        width: 100%;
+        height: 150px;
+    }
+
+    .booking-info {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .tabs-header {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .tab-btn {
+        text-align: left;
+    }
+
+    .tab-btn.active::after {
+        display: none;
+    }
+
+    .tab-btn.active {
+        background: rgba(255, 217, 61, 0.2);
+        border-radius: 8px;
     }
 }

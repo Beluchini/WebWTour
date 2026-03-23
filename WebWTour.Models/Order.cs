@@ -38,9 +38,11 @@ public class Order
     
     public string? BookType { get; set; }
     
-    public bool IsCompleted { get; set; } = false;
+    public string Status { get; set; } = "cart"; // cart, booked, completed, cancelled
     
-    // Навигационное свойство
+    public DateTime? BookingDate { get; set; }
+    
+    // Навигационные свойства
     public User? User { get; set; }
     public Tour? Tour { get; set; }
 }

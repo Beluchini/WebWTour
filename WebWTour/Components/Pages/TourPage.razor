@@ -132,7 +132,7 @@ else
     {
         Tour = ef.Tours.FirstOrDefault(t => t.Id == Id);
     }
-
+    
     private async Task AddToCart(int quantity = 1)
     {
         if (Tour != null)
@@ -141,10 +141,13 @@ else
         }
     }
 
-    private void BookNow()
+    private async Task BookNow()
     {
-        // TODO: Реализовать бронирование
-        Console.WriteLine($"Бронирование тура {Tour?.Tittle}");
-        // Можно добавить уведомление для пользователя
+        if (Tour != null)
+        {
+            await AuthService.AddToCart(Tour, 1);
+            await AuthService.BookAllOrders();
+            Navigation.NavigateTo("/profile");
+        }
     }
 }

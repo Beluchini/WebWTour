@@ -13,6 +13,7 @@
     <img class="background-image" src="image 12.png" alt="Background" />
     <div class="overlay"></div>
 
+    <!-- Шапка -->
     <Header />
 
     <!-- Контент -->
@@ -35,12 +36,21 @@
                 </div>
             </div>
 
-            <!-- Корзина -->
-            <div class="cart-section glass-card">
-                <h2 class="section-title">🛒 Моя корзина</h2>
-                
-                @if (AuthService.CartItems.Count == 0)
-                {
+            <!-- Табы -->
+            <div class="tabs-section glass-card">
+                <div class="tabs-header">
+                    <button class="tab-btn @(_activeTab == "cart" ? "active" : "")" @onclick="SetActiveCart">
+                        🛒 Корзина (@AuthService.CartCount)
+                    </button>
+                    <button class="tab-btn @(_activeTab == "bookings" ? "active" : "")" @onclick="SetActiveBookings">
+                        📅 Мои брони (@AuthService.BookedOrders.Count)
+                    </button>
+                </div>
+
+                <!-- Корзина -->
+                <div class="tab-content @(_activeTab == "cart" ? "active" : "")">
+                    @if (AuthService.CartItems.Count == 0)
+                    {
                     <div class="empty-cart">
                         <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
                             <circle cx="9" cy="21" r="1"/>
@@ -48,57 +58,120 @@
                             <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
                         </svg>
                         <p>Ваша корзина пуста</p>
-                        <a href="/" class="btn-browse">Посмотреть туры</a>
+                        <a href="/tours" class="btn-browse">Посмотреть туры</a>
                     </div>
-                }
-                else
-                {
+                    }
+                    else
+                    {
                     <div class="cart-items">
                         @foreach (var item in AuthService.CartItems)
                         {
-                            <div class="cart-item">
-                                <img class="cart-item-image" src="@item.Tour.ImageLink" alt="@item.Tour.Tittle" />
-                                <div class="cart-item-details">
-                                    <h3 class="cart-item-title">@item.Tour.Tittle</h3>
-                                    <p class="cart-item-place">📍 @item.Tour.Place</p>
-                                    <p class="cart-item-price">@item.Tour.Price.ToString("N0") ₽</p>
-                                </div>
-                                <div class="cart-item-actions">
-                                    <div class="quantity-control">
-                                        <button class="quantity-btn" @onclick="() => UpdateQuantity(item.OrderId, item.Quantity - 1)">-</button>
-                                        <span class="quantity-value">@item.Quantity</span>
-                                        <button class="quantity-btn" @onclick="() => UpdateQuantity(item.OrderId, item.Quantity + 1)">+</button>
-                                    </div>
-                                    <button class="remove-btn" @onclick="() => RemoveItem(item.OrderId)">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <line x1="18" y1="6" x2="6" y2="18"/>
-                                            <line x1="6" y1="6" x2="18" y2="18"/>
-                                        </svg>
-                                    </button>
-                                </div>
+                        <div class="cart-item">
+                            <img class="cart-item-image" src="@item.Tour.ImageLink" alt="@item.Tour.Tittle" />
+                            <div class="cart-item-details">
+                                <h3 class="cart-item-title">@item.Tour.Tittle</h3>
+                                <p class="cart-item-place">📍 @item.Tour.Place</p>
+                                <p class="cart-item-price">@item.Tour.Price.ToString("N0") ₽</p>
                             </div>
+                            <div class="cart-item-actions">
+                                <div class="quantity-control">
+                                    <button class="quantity-btn" @onclick="() => UpdateQuantity(item.OrderId, item.Quantity - 1)">-</button>
+                                    <span class="quantity-value">@item.Quantity</span>
+                                    <button class="quantity-btn" @onclick="() => UpdateQuantity(item.OrderId, item.Quantity + 1)">+</button>
+                                </div>
+                                <button class="remove-btn" @onclick="() => RemoveItem(item.OrderId)">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="18" y1="6" x2="6" y2="18"/>
+                                        <line x1="6" y1="6" x2="18" y2="18"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
                         }
                     </div>
-                    
+
                     <div class="cart-summary">
                         <div class="summary-row">
                             <span>Итого:</span>
                             <span class="summary-total">@AuthService.CartTotal.ToString("N0") ₽</span>
                         </div>
-                        <button class="btn-checkout" @onclick="Checkout">
-                            Оформить заказ
+                        <button class="btn-checkout" @onclick="BookAll">
+                            Забронировать все
                         </button>
                         <button class="btn-clear" @onclick="ClearCart">
                             Очистить корзину
                         </button>
                     </div>
-                }
+                    }
+                </div>
+
+                <!-- Мои брони -->
+                <div class="tab-content @(_activeTab == "bookings" ? "active" : "")">
+                    @if (AuthService.BookedOrders.Count == 0)
+                    {
+                    <div class="empty-bookings">
+                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        <p>У вас пока нет бронирований</p>
+                        <a href="/tours" class="btn-browse">Выбрать тур</a>
+                    </div>
+                    }
+                    else
+                    {
+                    <div class="bookings-grid">
+                        @foreach (var booking in AuthService.BookedOrders)
+                        {
+                        <div class="booking-card">
+                            <img class="booking-image" src="@booking.ImageLink" alt="@booking.TitleOrder" />
+                            <div class="booking-details">
+                                <h3 class="booking-title">@booking.TitleOrder</h3>
+                                <p class="booking-place">📍 @booking.PlaceOrder</p>
+                                <div class="booking-info">
+                                    <span class="booking-date">📅 @booking.OpenDateOrder.ToString("dd.MM.yyyy") - @booking.CloseDateOrder.ToString("dd.MM.yyyy")</span>
+                                    <span class="booking-price">@booking.PriceOrder.ToString("N0") ₽</span>
+                                    <span class="booking-status">Забронировано</span>
+                                    <span class="booking-booking-date">Забронировано: @booking.BookingDate?.ToString("dd.MM.yyyy HH:mm")</span>
+                                </div>
+                                <button class="btn-cancel" @onclick="() => CancelBooking(booking.Id)">
+                                    Отменить бронь
+                                </button>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+<style>
+    /* Стили для табов */
+    
+</style>
+
 @code {
+    private string _activeTab = "cart";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthService.InitializeAsync();
+        AuthService.OnAuthStateChanged += StateHasChanged;
+        AuthService.OnCartChanged += StateHasChanged;
+        AuthService.OnBookingsChanged += StateHasChanged;
+    }
+
+    private void SetActiveTab(string tab)
+    {
+        _activeTab = tab;
+        StateHasChanged();
+    }
+
     private async Task UpdateQuantity(int orderId, int quantity)
     {
         await AuthService.UpdateQuantity(orderId, quantity);
@@ -117,20 +190,36 @@
         StateHasChanged();
     }
 
-    private async Task Checkout()
+    private async Task BookAll()
     {
-        await AuthService.CompleteOrder();
+        await AuthService.BookAllOrders();
+        _activeTab = "bookings";
         StateHasChanged();
     }
 
-    private async Task Logout()
+    private async Task CancelBooking(int orderId)
     {
-        await AuthService.Logout();
-        Navigation.NavigateTo("/", true);
+        await AuthService.CancelBooking(orderId);
+        StateHasChanged();
     }
 
-    private void GoToHome()
+    private void SetActiveCart()
     {
-        Navigation.NavigateTo("/", true);
+        _activeTab = "cart";
+        StateHasChanged();
     }
+
+    private void SetActiveBookings()
+    {
+        _activeTab = "bookings";
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        AuthService.OnAuthStateChanged -= StateHasChanged;
+        AuthService.OnCartChanged -= StateHasChanged;
+        AuthService.OnBookingsChanged -= StateHasChanged;
+    }
+
 }
