@@ -1,0 +1,102 @@
+@page "/AddTour"
+@using WebWTour.Database
+@using WebWTour.Models
+@rendermode InteractiveServer
+@inject TourContext ef
+
+<div class="admin-container">
+    <div class="page-header">
+        <h1 class="page-title">➕ Добавление нового тура</h1>
+        <p class="page-subtitle">Заполните информацию о туристическом предложении</p>
+    </div>
+
+    <div class="form-card">
+        <EditForm FormName="formAddItem" Model="_tour" OnValidSubmit="Submit">
+            <DataAnnotationsValidator></DataAnnotationsValidator>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Название тура</label>
+                    <input type="text" class="form-control" @bind="_tour.Tittle" placeholder="Введите название тура" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Страна</label>
+                    <input type="text" class="form-control" @bind="_tour.Place" placeholder="Например: Турция, Египет" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Краткое описание</label>
+                    <input type="text" class="form-control" @bind="_tour.Description" placeholder="Краткое описание тура" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Тип тура</label>
+                    <input type="text" class="form-control" @bind="_tour.BookType" placeholder="Например: Экскурсионный, Пляжный" />
+                </div>
+
+                <div class="form-group full-width">
+                    <label class="form-label">Полное описание</label>
+                    <textarea class="form-control" @bind="_tour.FullDecription" rows="4" placeholder="Подробное описание тура, программа, особенности"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Ссылка на превью</label>
+                    <input type="text" class="form-control" @bind="_tour.ImageLink" placeholder="https://example.com/image.jpg" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Цена (₽)</label>
+                    <input type="number" class="form-control" @bind="_tour.Price" placeholder="0" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Сезон</label>
+                    <input type="text" class="form-control" @bind="_tour.Season" placeholder="Например: Лето 2024, Зима" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Дата начала</label>
+                    <input type="date" class="form-control" @bind="_tour.OpenDate" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Дата окончания</label>
+                    <input type="date" class="form-control" @bind="_tour.CloseDate" />
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <span class="btn-icon">➕</span>
+                    Добавить тур
+                </button>
+                <button type="button" class="btn btn-secondary" @onclick="ResetForm">
+                    <span class="btn-icon">🔄</span>
+                    Очистить форму
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private Tour _tour = new Tour();
+
+    private void Submit(EditContext arg)
+    {
+        ef.Add(_tour);
+        ef.SaveChanges();
+        _tour = new Tour();
+        
+        // Optional: Show success message (you can add a toast/notification here)
+        // For now, just reset the form
+        StateHasChanged();
+    }
+
+    private void ResetForm()
+    {
+        _tour = new Tour();
+        StateHasChanged();
+    }
+}

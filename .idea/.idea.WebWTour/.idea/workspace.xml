@@ -13,21 +13,51 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="59496e84-10d9-4d24-a581-362ae837d74b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/WebWTour.Models/Order.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WebWTour.Models/Review.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WebWTour.Models/Tour.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/AddTour.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/Catalog.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WebWTour/wwwroot/image 12.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.WebWTour/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.WebWTour/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebWTour/Components/Layout/MainLayout.razor" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/Components/Layout/MainLayout.razor" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebWTour/Components/Layout/NavMenu.razor" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/Components/Layout/NavMenu.razor" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebWTour/Components/Pages/Counter.razor" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebWTour/Components/Pages/Home.razor" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/Home.razor" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebWTour/Components/Pages/Weather.razor" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebWTour/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebWTour/WebWTour.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/WebWTour.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebWTour/wwwroot/app.css" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/wwwroot/app.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="DpaMonitoringSettings">
+    <option name="autoShow" value="false" />
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 0
-}]]></component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Beluchini&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Beluchini/WebWTour.git&quot;,
+    &quot;accountId&quot;: &quot;06c631ae-99c9-41f5-b84a-b4fd2035a76c&quot;
+  }
+}</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/WebWTour.Database/TourContext.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/WebWTour.Models/Review.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/WebWTour/Components/Pages/Home.razor" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectId" id="3BGEJgnydHBWZhlEL5GQDNBGPrC" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
@@ -36,19 +66,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Launch Settings Profile.WebWTour: http.executor&quot;: &quot;Debug&quot;,
+    &quot;.NET Launch Settings Profile.WebWTour: https.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
-  <component name="RunManager" selected=".NET Launch Settings Profile.WebWTour: http">
+}</component>
+  <component name="RunManager" selected=".NET Launch Settings Profile.WebWTour: https">
     <configuration name="WebWTour: http" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/WebWTour/WebWTour.csproj" />
       <option name="LAUNCH_PROFILE_TFM" value="net9.0" />
@@ -148,15 +180,30 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1774106938522</updated>
-      <workItem from="1774106940730" duration="3574000" />
+      <workItem from="1774106940730" duration="6212000" />
+      <workItem from="1774191552497" duration="1838000" />
+      <workItem from="1774203774737" duration="1457000" />
+      <workItem from="1774246849834" duration="5448000" />
     </task>
+    <task id="LOCAL-00001" summary="models and migrations">
+      <option name="closed" value="true" />
+      <created>1774116620299</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1774116620299</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+    <MESSAGE value="models and migrations" />
+    <option name="LAST_COMMIT_MESSAGE" value="models and migrations" />
   </component>
 </project>

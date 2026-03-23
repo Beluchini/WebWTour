@@ -1,6 +1,10 @@
+using Microsoft.EntityFrameworkCore;
 using WebWTour.Components;
+using WebWTour.Database;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<TourContext>();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -24,5 +28,12 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+using (var ServieScope = app.Services.CreateScope())
+{
+    var context = ServieScope.ServiceProvider.GetRequiredService<TourContext>();
+    
+    context.Database.Migrate();
+}
 
 app.Run();

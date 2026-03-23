@@ -11,6 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\WebWTour.Database\WebWTour.Database.csproj" />
       <ProjectReference Include="..\WebWTour.Models\WebWTour.Models.csproj" />
     </ItemGroup>
 

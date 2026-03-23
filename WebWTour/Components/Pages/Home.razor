@@ -2,9 +2,93 @@
 @using Microsoft.EntityFrameworkCore
 @using WebWTour.Models
 
-<PageTitle>Home</PageTitle>
+<PageTitle>World Tour | Путешествия мечты</PageTitle>
 
+<div class="home-container">
+    <!-- Фоновое изображение -->
+    <img class="background-image" src="image 12.png" alt="Background" />
+    
+    <!-- Полупрозрачный оверлей для улучшения читаемости -->
+    <div class="overlay"></div>
+    
+    <!-- Шапка -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-word">World</span>
+                <span class="logo-word">Tour</span>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="/tours" class="nav-link">Туры</a>
+                <a href="/countries" class="nav-link">Страны</a>
+                <a href="https://www.aviasales.ru/" class="nav-link">Авиабилеты</a>
+                <a href="/about" class="nav-link">О нас</a>
+            </nav>
+            
+            <div class="auth-buttons">
+                <a href="/register" class="btn-register">Зарегистрироваться</a>
+                <a href="/login" class="btn-login">Войти</a>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Центральный блок с фильтром -->
+    <main class="main-content">
+        <div class="search-section">
+            <div class="search-card glass-card">
+                <div class="search-form">
+                    <div class="search-field">
+                        <label class="field-label">Куда</label>
+                        <input type="text" 
+                               class="field-input" 
+                               placeholder="Страна, город, курорт" 
+                               value=""
+                               @oninput="(e) => { }" />
+                    </div>
+                    
+                    <div class="search-field">
+                        <label class="field-label">Когда</label>
+                        <input type="text" 
+                               class="field-input" 
+                               placeholder="Дата или месяц" 
+                               value=""
+                               @oninput="(e) => { }" />
+                    </div>
+                    
+                    <div class="search-field">
+                        <label class="field-label">Кто едет</label>
+                        <div class="guests-input">
+                            <input type="text" 
+                                   class="field-input" 
+                                   placeholder="2 взрослых" 
+                                   value="2 взрослых"
+                                   readonly />
+                            <button class="guests-button" type="button">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M6 9l6 6 6-6"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button class="search-button">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="M21 21l-4.35-4.35"/>
+                        </svg>
+                        Найти
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
 
+<div>
+    @foreach(var tour in )
+    <img src=""/>
+</div>
 
 @code
 {
