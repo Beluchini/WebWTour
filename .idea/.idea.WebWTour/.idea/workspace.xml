@@ -12,9 +12,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="59496e84-10d9-4d24-a581-362ae837d74b" name="Changes" comment="Пасхалко">
+    <list default="true" id="59496e84-10d9-4d24-a581-362ae837d74b" name="Changes" comment="Готово">
+      <change afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/ManageTours.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/manageTours.razor.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.WebWTour/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.WebWTour/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WebWTour/Components/Pages/Home.razor" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/Components/Pages/Home.razor" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebWTour/tour.db" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/tour.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WebWTour/tour.db-shm" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/tour.db-shm" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/WebWTour/tour.db-wal" beforeDir="false" afterPath="$PROJECT_DIR$/WebWTour/tour.db-wal" afterDir="false" />
     </list>
@@ -189,7 +191,7 @@
       <workItem from="1774191552497" duration="1838000" />
       <workItem from="1774203774737" duration="1457000" />
       <workItem from="1774246849834" duration="13114000" />
-      <workItem from="1774260884662" duration="12508000" />
+      <workItem from="1774260884662" duration="14690000" />
     </task>
     <task id="LOCAL-00001" summary="models and migrations">
       <option name="closed" value="true" />
@@ -239,7 +241,15 @@
       <option name="project" value="LOCAL" />
       <updated>1774272513658</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Готово">
+      <option name="closed" value="true" />
+      <created>1774273916222</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1774273916222</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -255,6 +265,7 @@
     <MESSAGE value="Сделал учетную запись" />
     <MESSAGE value="Есть фильтры, личный кабинет, корзина, туры" />
     <MESSAGE value="Пасхалко" />
-    <option name="LAST_COMMIT_MESSAGE" value="Пасхалко" />
+    <MESSAGE value="Готово" />
+    <option name="LAST_COMMIT_MESSAGE" value="Готово" />
   </component>
 </project>

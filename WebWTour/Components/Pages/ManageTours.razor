@@ -1,0 +1,412 @@
+@page "/manage-tours"
+@using Microsoft.EntityFrameworkCore
+@using WebWTour.Database
+@using WebWTour.Models
+@inject TourContext ef
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<PageTitle>Управление турами | World Tour</PageTitle>
+
+<div class="manage-container">
+    <img class="background-image" src="image 12.png" alt="Background" />
+    <div class="overlay"></div>
+
+    <Header />
+
+    <div class="manage-content">
+        <div class="manage-wrapper">
+            <div class="manage-header glass-card">
+                <h1 class="manage-title">Управление турами</h1>
+                <button class="btn-add" @onclick="OpenAddModal">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    Добавить тур
+                </button>
+            </div>
+
+            <div class="manage-filters glass-card">
+                <div class="search-box">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="M21 21l-4.35-4.35"/>
+                    </svg>
+                    <input type="text" 
+                           class="search-input" 
+                           placeholder="Поиск по названию или стране..." 
+                           @bind="_searchTerm"
+                           @oninput="OnSearchChange" />
+                </div>
+                <div class="filter-select">
+                    <select value="@_selectedType" @onchange="OnTypeChange">
+                        <option value="">Все типы</option>
+                        @foreach (var type in _tourTypes)
+                        {
+                            <option value="@type">@type</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="manage-table glass-card">
+                <div class="table-responsive">
+                    <table class="tours-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Изображение</th>
+                                <th>Название</th>
+                                <th>Страна</th>
+                                <th>Цена</th>
+                                <th>Тип</th>
+                                <th>Сезон</th>
+                                <th>Даты</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var tour in _displayedTours)
+                            {
+                                <tr>
+                                    <td>@tour.Id</td>
+                                    <td>
+                                        <img class="table-image" src="@tour.ImageLink" alt="@tour.Tittle" onerror="this.src='/images/placeholder.jpg'" />
+                                    </td>
+                                    <td class="tour-title">@tour.Tittle</td>
+                                    <td>@tour.Place</td>
+                                    <td class="tour-price">@tour.Price.ToString("N0") ₽</td>
+                                    <td><span class="type-badge">@tour.BookType</span></td>
+                                    <td><span class="season-badge">@tour.Season</span></td>
+                                    <td class="tour-dates">
+                                        @tour.OpenDate.ToString("dd.MM.yyyy")<br />
+                                        @tour.CloseDate.ToString("dd.MM.yyyy")
+                                    </td>
+                                    <td class="actions">
+                                        <button class="btn-edit" @onclick="() => OpenEditModal(tour)">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M17 3l4 4-7 7H10v-4l7-7z"/>
+                                                <path d="M3 21h18"/>
+                                            </svg>
+                                        </button>
+                                        <button class="btn-delete" @onclick="() => OpenDeleteModal(tour)">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"/>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                            </svg>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @if (_filteredTours.Count == 0)
+                {
+                    <div class="no-results">
+                        <p>Туры не найдены</p>
+                    </div>
+                }
+
+                @if (_filteredTours.Count > 0)
+                {
+                    <div class="pagination">
+                        <button class="page-btn" @onclick="PreviousPage" disabled="@(_currentPage == 1)">◀ Предыдущая</button>
+                        <span class="page-info">Страница @_currentPage из @_totalPages</span>
+                        <button class="page-btn" @onclick="NextPage" disabled="@(_currentPage == _totalPages)">Следующая ▶</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно добавления/редактирования -->
+@if (_showModal)
+{
+    <div class="modal-overlay">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h2>@(_isEditing ? "Редактировать тур" : "Добавить тур")</h2>
+                <button class="modal-close" @onclick="CloseModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Название *</label>
+                    <input type="text" @bind="_editTour.Tittle" placeholder="Введите название" />
+                </div>
+                <div class="form-group">
+                    <label>Краткое описание</label>
+                    <input type="text" @bind="_editTour.Description" placeholder="Краткое описание" />
+                </div>
+                <div class="form-group">
+                    <label>Полное описание</label>
+                    <textarea @bind="_editTour.FullDecription" rows="3" placeholder="Подробное описание тура"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Ссылка на изображение</label>
+                        <input type="text" @bind="_editTour.ImageLink" placeholder="URL изображения" />
+                    </div>
+                    <div class="form-group">
+                        <label>Страна *</label>
+                        <input type="text" @bind="_editTour.Place" placeholder="Страна" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Цена (₽) *</label>
+                        <input type="number" @bind="_editTour.Price" placeholder="Цена" />
+                    </div>
+                    <div class="form-group">
+                        <label>Сезон</label>
+                        <select @bind="_editTour.Season">
+                            <option value="">Выберите сезон</option>
+                            <option value="Лето">Лето</option>
+                            <option value="Зима">Зима</option>
+                            <option value="Весна">Весна</option>
+                            <option value="Осень">Осень</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Тип тура *</label>
+                        <select @bind="_editTour.BookType">
+                            <option value="">Выберите тип</option>
+                            <option value="Экскурсионный">Экскурсионный</option>
+                            <option value="Пляжный">Пляжный</option>
+                            <option value="Горнолыжный">Горнолыжный</option>
+                            <option value="Круиз">Круиз</option>
+                            <option value="Приключенческий">Приключенческий</option>
+                            <option value="Семейный">Семейный</option>
+                            <option value="Романтический">Романтический</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Дата начала *</label>
+                        <input type="date" @bind="_editTour.OpenDate" />
+                    </div>
+                    <div class="form-group">
+                        <label>Дата окончания *</label>
+                        <input type="date" @bind="_editTour.CloseDate" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" @onclick="CloseModal">Отмена</button>
+                <button class="btn-save" @onclick="SaveTour">Сохранить</button>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Модальное окно подтверждения удаления -->
+@if (_showDeleteModal)
+{
+<div class="modal-overlay" @onclick="CloseDeleteModal">
+    <div class="modal-content delete-modal glass-card" @onclick:stopPropagation="true">
+        <div class="modal-header">
+            <h2>Удалить тур</h2>
+            <button class="modal-close" @onclick="CloseDeleteModal">✕</button>
+        </div>
+        <div class="modal-body">
+            <p>Вы уверены, что хотите удалить тур <strong>@_deleteTour?.Tittle</strong>?</p>
+            <p class="warning">⚠️ Это действие нельзя отменить.</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" @onclick="CloseDeleteModal">Отмена</button>
+            <button class="btn-delete-confirm" @onclick="DeleteTour">Удалить</button>
+        </div>
+    </div>
+</div>
+}
+
+@code {
+    private List<Tour> _allTours = new();
+    private List<Tour> _filteredTours = new();
+    private List<Tour> _displayedTours = new();
+    private List<string> _tourTypes = new();
+    private string _searchTerm = "";
+    private string _selectedType = "";
+    private int _currentPage = 1;
+    private int _pageSize = 10;
+    private int _totalPages = 1;
+    
+    private bool _showModal = false;
+    private bool _showDeleteModal = false;
+    private bool _isEditing = false;
+    private Tour _editTour = new();
+    private Tour? _deleteTour;
+
+    protected override void OnInitialized()
+    {
+        LoadTours();
+    }
+
+    private void LoadTours()
+    {
+        _allTours = ef.Tours.OrderByDescending(t => t.Id).ToList();
+        _tourTypes = _allTours.Select(t => t.BookType).Distinct().ToList();
+        ApplyFilters();
+    }
+
+    private void OnSearchChange()
+    {
+        _currentPage = 1;
+        ApplyFilters();
+    }
+
+    private void OnTypeChange(ChangeEventArgs e)
+    {
+        _selectedType = e.Value?.ToString() ?? "";
+        ApplyFilters();
+    }
+
+    private void ApplyFilters()
+    {
+        var query = _allTours.AsQueryable();
+        
+        if (!string.IsNullOrEmpty(_searchTerm))
+        {
+            query = query.Where(t => t.Tittle.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                                     t.Place.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase));
+        }
+        
+        if (!string.IsNullOrEmpty(_selectedType))
+        {
+            query = query.Where(t => t.BookType == _selectedType);
+        }
+        
+        _filteredTours = query.ToList();
+        _totalPages = (int)Math.Ceiling((double)_filteredTours.Count / _pageSize);
+        if (_totalPages == 0) _totalPages = 1;
+        if (_currentPage > _totalPages) _currentPage = _totalPages;
+        UpdateDisplayedTours();
+    }
+
+    private void UpdateDisplayedTours()
+    {
+        _displayedTours = _filteredTours
+            .Skip((_currentPage - 1) * _pageSize)
+            .Take(_pageSize)
+            .ToList();
+    }
+
+    private void PreviousPage()
+    {
+        if (_currentPage > 1)
+        {
+            _currentPage--;
+            UpdateDisplayedTours();
+        }
+    }
+
+    private void NextPage()
+    {
+        if (_currentPage < _totalPages)
+        {
+            _currentPage++;
+            UpdateDisplayedTours();
+        }
+    }
+
+    private void OpenAddModal()
+    {
+        _editTour = new Tour
+        {
+            OpenDate = DateTime.Now,
+            CloseDate = DateTime.Now.AddDays(7)
+        };
+        _isEditing = false;
+        _showModal = true;
+    }
+
+    private void OpenEditModal(Tour tour)
+    {
+        _editTour = new Tour
+        {
+            Id = tour.Id,
+            Tittle = tour.Tittle,
+            Description = tour.Description,
+            FullDecription = tour.FullDecription,
+            ImageLink = tour.ImageLink,
+            Price = tour.Price,
+            Place = tour.Place,
+            Season = tour.Season,
+            BookType = tour.BookType,
+            OpenDate = tour.OpenDate,
+            CloseDate = tour.CloseDate
+        };
+        _isEditing = true;
+        _showModal = true;
+    }
+
+    private async Task SaveTour()
+    {
+        if (string.IsNullOrWhiteSpace(_editTour.Tittle) ||
+            string.IsNullOrWhiteSpace(_editTour.Place) ||
+            _editTour.Price <= 0 ||
+            string.IsNullOrWhiteSpace(_editTour.BookType))
+        {
+            return;
+        }
+
+        if (_isEditing)
+        {
+            var existingTour = await ef.Tours.FindAsync(_editTour.Id);
+            if (existingTour != null)
+            {
+                existingTour.Tittle = _editTour.Tittle;
+                existingTour.Description = _editTour.Description;
+                existingTour.FullDecription = _editTour.FullDecription;
+                existingTour.ImageLink = _editTour.ImageLink;
+                existingTour.Price = _editTour.Price;
+                existingTour.Place = _editTour.Place;
+                existingTour.Season = _editTour.Season;
+                existingTour.BookType = _editTour.BookType;
+                existingTour.OpenDate = _editTour.OpenDate;
+                existingTour.CloseDate = _editTour.CloseDate;
+            }
+        }
+        else
+        {
+            ef.Tours.Add(_editTour);
+        }
+        
+        await ef.SaveChangesAsync();
+        LoadTours();
+        CloseModal();
+    }
+
+    private void OpenDeleteModal(Tour tour)
+    {
+        _deleteTour = tour;
+        _showDeleteModal = true;
+    }
+
+    private async Task DeleteTour()
+    {
+        if (_deleteTour != null)
+        {
+            ef.Tours.Remove(_deleteTour);
+            await ef.SaveChangesAsync();
+            LoadTours();
+        }
+        CloseDeleteModal();
+    }
+
+    private void CloseModal()
+    {
+        _showModal = false;
+        _editTour = new Tour();
+    }
+
+    private void CloseDeleteModal()
+    {
+        _showDeleteModal = false;
+        _deleteTour = null;
+    }
+}
