@@ -30,7 +30,7 @@
                         <div class="autocomplete-container">
                             <input type="text"
                                    class="field-input"
-                                   placeholder="Страна, город, курорт"
+                                   placeholder="Страна"
                                    @bind="_searchPlace"
                                    @oninput="OnPlaceInput" />
                             @if (_suggestions.Count > 0 && !string.IsNullOrEmpty(_searchPlace))
